@@ -1,0 +1,43 @@
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Request } from 'express';
+import { JwtService } from '../utils/services/jwt.service';
+
+@Injectable()
+export class BearerAuthGuard implements CanActivate {
+  constructor(private readonly jwtService: JwtService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest<Request>();
+
+    const authorization = req.header('Authorization');
+    if (!authorization) {
+      throw new UnauthorizedException();
+    }
+
+    const parts = authorization.split(' ');
+
+    const token = parts[1];
+
+    const splitToken = token.split('.');
+    if (
+      parts.length !== 2 ||
+      parts[0] !== 'Bearer' ||
+      splitToken.length !== 3
+    ) {
+      throw new UnauthorizedException();
+    }
+
+    try {
+      const userId = await this.jwtService.getUserIdByToken(token);
+      req['userId'] = userId;
+      return true;
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
+  }
+}
