@@ -13,15 +13,15 @@ import {
 import { BlogModule } from './features/blogs/blog.module';
 import { PostModule } from './features/posts/post.module';
 import { CommentModule } from './features/comments/comment.module';
-import { HelloPageModule } from './base/1page/hello.page';
 import { SETTINGS } from './settings/app.settings';
 import * as process from 'process';
+import { HelloPageModule } from './base/hello.page/hello.page';
 
 @Module({
   imports: [
     process.env.DB_CONNECTION === 'NEON'
       ? SETTINGS.DB_CONNECTION.CONNECT_TO_NEON_DB
-      : SETTINGS.DB_CONNECTION.CONNECT_TO_LOCAL_DB,
+      : SETTINGS.DB_CONNECTION.CONNECT_TO_TEST_DB,
     AuthModule,
     DeviceModule,
     UserModule,

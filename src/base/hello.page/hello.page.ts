@@ -30,7 +30,7 @@ export class helloPageController {
       );
       user = isUserExist[0].login;
     }
-    return `Long time no see, ${user}`;
+    return `Welcome to new project with typeorm, ${user}`;
   }
 }
 

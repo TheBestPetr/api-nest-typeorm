@@ -7,21 +7,21 @@ config();
 export const SETTINGS = {
   PORT: process.env.APP_PORT || '',
   DB_CONNECTION: {
-    CONNECT_TO_LOCAL_DB: TypeOrmModule.forRoot({
+    CONNECT_TO_TEST_DB: TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 5432,
       username: 'postgres',
       password: 'sa',
-      database: 'HwNest',
-      autoLoadEntities: false,
-      synchronize: false,
+      database: 'nest typeorm',
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     CONNECT_TO_NEON_DB: TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.NEON_POSTGRESQL_URL || '',
-      autoLoadEntities: false,
-      synchronize: false,
+      autoLoadEntities: true,
+      synchronize: true,
       extra: {
         ssl: {
           rejectUnauthorized: false,
