@@ -10,7 +10,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { DevicesService } from '../application/devices.service';
-import { DevicesRepository } from '../infrastructure/devices.repository';
+import { DevicesRepository } from '../infrastructure/sql/devices.repository';
 
 @Controller('security/devices')
 export class DevicesController {

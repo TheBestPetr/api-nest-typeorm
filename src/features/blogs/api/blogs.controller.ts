@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
+import { BlogsQueryRepository } from '../infrastructure/sql/blogs.query.repository';
 import { BlogsService } from '../application/blogs.service';
 import { BlogInputQueryDto } from './dto/input/blog.input.dto';
 import {
@@ -17,7 +17,7 @@ import {
 } from '../../../infrastructure/utils/query.mappers';
 import { PostInputQueryDto } from '../../posts/api/dto/input/post.input.dto';
 import { PostsService } from '../../posts/application/posts.service';
-import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
+import { PostsQueryRepository } from '../../posts/infrastructure/sql/posts.query.repository';
 import { isUUID } from 'class-validator';
 import { BearerAuthWithout401 } from '../../../infrastructure/decorators/bearer.auth.without.401';
 

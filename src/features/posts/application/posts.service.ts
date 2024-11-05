@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PostsRepository } from '../infrastructure/posts.repository';
+import { PostsRepository } from '../infrastructure/sql/posts.repository';
 import { PostInputBlogDto } from '../api/dto/input/post.input.dto';
 import { PostOutputDto } from '../api/dto/output/post.output.dto';
-import { BlogsQueryRepository } from '../../blogs/infrastructure/blogs.query.repository';
+import { BlogsQueryRepository } from '../../blogs/infrastructure/sql/blogs.query.repository';
 import { Post } from '../domain/post.entity';
 import { LikeStatus } from '../../../base/types/like.statuses';
 import { PostLikeEntity } from '../domain/post.like.entity';
-import { UsersQueryRepository } from '../../users/infrastructure/users.query.repository';
-import { PostsLikeInfoRepository } from '../infrastructure/posts.like.info.repository';
+import { UsersQueryRepository } from '../../users/infrastructure/sql/users.query.repository';
+import { PostsLikeInfoRepository } from '../infrastructure/sql/posts.like.info.repository';
 
 @Injectable()
 export class PostsService {

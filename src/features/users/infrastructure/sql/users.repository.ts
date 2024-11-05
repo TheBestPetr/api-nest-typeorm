@@ -5,7 +5,7 @@ import {
   EmailConfirmation,
   PasswordRecovery,
   User,
-} from '../domain/user.entity';
+} from '../../domain/user.entity';
 
 @Injectable()
 export class UsersRepository {

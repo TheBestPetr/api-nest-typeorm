@@ -15,7 +15,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from '../application/comments.service';
-import { CommentsQueryRepository } from '../infrastructure/comments.query.repository';
+import { CommentsQueryRepository } from '../infrastructure/sql/comments.query.repository';
 import { BearerAuthWithout401 } from '../../../infrastructure/decorators/bearer.auth.without.401';
 import { isUUID } from 'class-validator';
 import { BearerAuthGuard } from '../../../infrastructure/guards/bearer.auth.guard';

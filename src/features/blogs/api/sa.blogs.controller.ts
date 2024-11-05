@@ -16,7 +16,7 @@ import {
   sortNPagingBlogQuery,
   sortNPagingPostQuery,
 } from '../../../infrastructure/utils/query.mappers';
-import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
+import { BlogsQueryRepository } from '../infrastructure/sql/blogs.query.repository';
 import { BasicAuthGuard } from '../../../infrastructure/guards/basic.auth.guard';
 import { BlogsService } from '../application/blogs.service';
 import { isUUID } from 'class-validator';
@@ -25,7 +25,7 @@ import {
   PostInputQueryDto,
 } from '../../posts/api/dto/input/post.input.dto';
 import { PostsService } from '../../posts/application/posts.service';
-import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
+import { PostsQueryRepository } from '../../posts/infrastructure/sql/posts.query.repository';
 
 @Controller('sa/blogs')
 @UseGuards(BasicAuthGuard)

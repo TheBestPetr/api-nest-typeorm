@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { JwtService } from '../../../infrastructure/utils/services/jwt.service';
-import { Device } from '../domain/device.entity';
-import { DeviceOutputDto } from '../api/dto/output/device.output.dto';
-import { RefreshTokenRepository } from '../../auth/infrastructure/refrest.token.repository';
+import { JwtService } from '../../../../infrastructure/utils/services/jwt.service';
+import { Device } from '../../domain/device.entity';
+import { DeviceOutputDto } from '../../api/dto/output/device.output.dto';
+import { RefreshTokenRepository } from '../../../auth/infrastructure/sql/refrest.token.repository';
 
 @Injectable()
 export class DevicesRepository {

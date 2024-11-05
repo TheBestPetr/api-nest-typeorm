@@ -9,17 +9,18 @@ export const SETTINGS = {
   DB_CONNECTION: {
     CONNECT_TO_TEST_DB: TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'sa',
-      database: 'nest typeorm',
+      host: process.env.POSTGRES_HOST,
+      port: process.env.POSTGRES_PORT,
+      username: process.env.USERNAME,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      //entities: [User], todo isKeyNeed
       autoLoadEntities: true,
       synchronize: true,
     }),
     CONNECT_TO_NEON_DB: TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.NEON_POSTGRESQL_URL || '',
+      url: process.env.NEON_POSTGRES_URL,
       autoLoadEntities: true,
       synchronize: true,
       extra: {

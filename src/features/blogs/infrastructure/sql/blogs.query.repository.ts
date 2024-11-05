@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BlogInputQueryDto } from '../api/dto/input/blog.input.dto';
+import { BlogInputQueryDto } from '../../api/dto/input/blog.input.dto';
 import {
   BlogOutputDto,
   BlogOutputQueryDto,
-} from '../api/dto/output/blog.output.dto';
+} from '../../api/dto/output/blog.output.dto';
 
 @Injectable()
 export class BlogsQueryRepository {

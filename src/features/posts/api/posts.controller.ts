@@ -14,7 +14,7 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import { PostsService } from '../application/posts.service';
-import { PostsQueryRepository } from '../infrastructure/posts.query.repository';
+import { PostsQueryRepository } from '../infrastructure/sql/posts.query.repository';
 import {
   sortNPagingCommentQuery,
   sortNPagingPostQuery,
@@ -31,7 +31,7 @@ import {
 } from '../../comments/api/dto/input/comment.input.dto';
 import { CommentsService } from '../../comments/application/comments.service';
 import { BearerAuthWithout401 } from '../../../infrastructure/decorators/bearer.auth.without.401';
-import { CommentsQueryRepository } from '../../comments/infrastructure/comments.query.repository';
+import { CommentsQueryRepository } from '../../comments/infrastructure/sql/comments.query.repository';
 
 @Controller('posts')
 export class PostsController {

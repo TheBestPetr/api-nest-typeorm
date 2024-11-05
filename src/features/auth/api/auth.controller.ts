@@ -11,7 +11,7 @@ import {
   Response,
 } from '@nestjs/common';
 import { AuthService } from '../application/auth.service';
-import { UsersQueryRepository } from '../../users/infrastructure/users.query.repository';
+import { UsersQueryRepository } from '../../users/infrastructure/sql/users.query.repository';
 import { BearerAuthGuard } from '../../../infrastructure/guards/bearer.auth.guard';
 import {
   AuthInputEmailConfirmationDto,

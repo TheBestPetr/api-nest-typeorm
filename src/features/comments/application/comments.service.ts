@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CommentsRepository } from '../infrastructure/comments.repository';
+import { CommentsRepository } from '../infrastructure/sql/comments.repository';
 import { CommentInputDto } from '../api/dto/input/comment.input.dto';
 import { CommentOutputDto } from '../api/dto/output/comment.output.dto';
-import { UsersQueryRepository } from '../../users/infrastructure/users.query.repository';
+import { UsersQueryRepository } from '../../users/infrastructure/sql/users.query.repository';
 import { Comment, CommentatorInfo } from '../domain/comment.entity';
-import { CommentsQueryRepository } from '../infrastructure/comments.query.repository';
+import { CommentsQueryRepository } from '../infrastructure/sql/comments.query.repository';
 import { LikeStatus } from '../../../base/types/like.statuses';
-import { CommentsLikeInfoRepository } from '../infrastructure/comments.like.info.repository';
+import { CommentsLikeInfoRepository } from '../infrastructure/sql/comments.like.info.repository';
 import { CommentLikeEntity } from '../domain/comment.like.entity';
 
 @Injectable()

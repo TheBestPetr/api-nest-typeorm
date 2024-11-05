@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../infrastructure/users.repository';
+import { UsersRepository } from '../infrastructure/sql/users.repository';
 import { UserInputDto } from '../api/dto/input/user.input.dto';
 import { UserOutputDto } from '../api/dto/output/user.output.dto';
 import { EmailConfirmation, User } from '../domain/user.entity';
@@ -14,23 +14,23 @@ export class UsersService {
 
   async createSuperUser(input: UserInputDto): Promise<UserOutputDto> {
     const passwordHash = await this.bcryptService.genHash(input.password);
-    const createdUser = new User();
-    createdUser.login = input.login;
-    createdUser.passwordHash = passwordHash;
-    createdUser.email = input.email;
+    const user = new User();
+    user.login = input.login;
+    user.passwordHash = passwordHash;
+    user.email = input.email;
     const userEmailConfirmation = new EmailConfirmation();
     userEmailConfirmation.confirmationCode = null;
     userEmailConfirmation.expirationDate = null;
     userEmailConfirmation.isConfirmed = true;
 
     const insertedUser = await this.usersRepository.createUser(
-      createdUser,
+      user,
       userEmailConfirmation,
     );
     return {
       id: insertedUser.id,
-      login: createdUser.login,
-      email: createdUser.email,
+      login: user.login,
+      email: user.email,
       createdAt: insertedUser.createdAt,
     };
   }

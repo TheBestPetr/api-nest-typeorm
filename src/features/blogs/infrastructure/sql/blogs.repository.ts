@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { Blog } from '../domain/blog.entity';
-import { BlogInputDto } from '../api/dto/input/blog.input.dto';
+import { Blog } from '../../domain/blog.entity';
+import { BlogInputDto } from '../../api/dto/input/blog.input.dto';
 
 @Injectable()
 export class BlogsRepository {

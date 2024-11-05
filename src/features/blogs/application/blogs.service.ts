@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BlogsRepository } from '../infrastructure/blogs.repository';
+import { BlogsRepository } from '../infrastructure/sql/blogs.repository';
 import { BlogInputDto } from '../api/dto/input/blog.input.dto';
 import { BlogOutputDto } from '../api/dto/output/blog.output.dto';
 import { Blog } from '../domain/blog.entity';

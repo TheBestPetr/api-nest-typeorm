@@ -1,46 +1,54 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class EmailConfirmation {
   @Column({ type: 'uuid' })
   userId: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', nullable: true })
   confirmationCode: string | null;
 
-  @Column({ type: 'timestamp with time zone' })
+  @Column({ type: 'timestamp with time zone', nullable: true })
   expirationDate: string | null;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: false })
   isConfirmed: boolean;
 }
 
 @Entity()
 export class PasswordRecovery {
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', nullable: true })
   userId: string | null;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   recoveryCode: string | null;
 
-  @Column({ type: 'timestamp with time zone' })
+  @Column({ type: 'timestamp with time zone', nullable: true })
   expirationDate: string | null;
 }
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
+  /*@PrimaryColumn({ type: 'uuid', update: false })
+  @Generated('uuid')*/
   id: string;
 
   @Column({ type: 'varchar', length: 10 })
   login: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', select: false })
   passwordHash: string;
 
   @Column({ type: 'varchar' })
   email: string;
 
-  @Column({ type: 'timestamp with time zone' })
+  @CreateDateColumn({ type: 'timestamp with time zone', update: false })
+  //@Column({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 }

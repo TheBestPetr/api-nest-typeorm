@@ -4,7 +4,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { UsersRepository } from '../../features/users/infrastructure/users.repository';
+import { UsersRepository } from '../../features/users/infrastructure/sql/users.repository';
 
 @ValidatorConstraint({ name: 'passwordRecoveryCodeIsExist', async: true })
 @Injectable()

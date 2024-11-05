@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { AuthIOutputDto } from '../../auth/api/dto/output/auth.output.dto';
-import { UserInputQueryDto } from '../api/dto/input/user.input.dto';
-import { UserOutputQueryDto } from '../api/dto/output/user.output.dto';
+import { AuthIOutputDto } from '../../../auth/api/dto/output/auth.output.dto';
+import { UserInputQueryDto } from '../../api/dto/input/user.input.dto';
+import { UserOutputQueryDto } from '../../api/dto/output/user.output.dto';
 
 @Injectable()
 export class UsersQueryRepository {

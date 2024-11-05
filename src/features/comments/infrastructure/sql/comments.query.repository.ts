@@ -4,9 +4,9 @@ import { DataSource } from 'typeorm';
 import {
   CommentOutputDto,
   CommentOutputQueryDto,
-} from '../api/dto/output/comment.output.dto';
-import { LikeStatus } from '../../../base/types/like.statuses';
-import { CommentInputQueryDto } from '../api/dto/input/comment.input.dto';
+} from '../../api/dto/output/comment.output.dto';
+import { LikeStatus } from '../../../../base/types/like.statuses';
+import { CommentInputQueryDto } from '../../api/dto/input/comment.input.dto';
 
 @Injectable()
 export class CommentsQueryRepository {

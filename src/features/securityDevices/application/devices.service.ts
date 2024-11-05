@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '../../../infrastructure/utils/services/jwt.service';
-import { DevicesRepository } from '../infrastructure/devices.repository';
+import { DevicesRepository } from '../infrastructure/sql/devices.repository';
 import { Device } from '../domain/device.entity';
 
 @Injectable()

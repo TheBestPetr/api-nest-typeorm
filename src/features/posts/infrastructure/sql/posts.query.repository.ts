@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PostInputQueryDto } from '../api/dto/input/post.input.dto';
+import { PostInputQueryDto } from '../../api/dto/input/post.input.dto';
 import {
   PostOutputDto,
   PostOutputQueryDto,
-} from '../api/dto/output/post.output.dto';
+} from '../../api/dto/output/post.output.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { LikeStatus } from '../../../base/types/like.statuses';
+import { LikeStatus } from '../../../../base/types/like.statuses';
 
 @Injectable()
 export class PostsQueryRepository {

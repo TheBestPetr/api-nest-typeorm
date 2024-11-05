@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { LikeStatus } from '../../../base/types/like.statuses';
-import { PostLikeEntity } from '../domain/post.like.entity';
+import { LikeStatus } from '../../../../base/types/like.statuses';
+import { PostLikeEntity } from '../../domain/post.like.entity';
 
 @Injectable()
 export class PostsLikeInfoRepository {
