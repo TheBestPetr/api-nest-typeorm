@@ -8,7 +8,6 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { Comment } from './comment.entity';
-import { User } from '../../users/domain/user.entity';
 
 @Entity()
 export class CommentUserLikeStatus {

@@ -9,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Device } from '../../securityDevices/domain/device.entity';
-import { CommentUserLikeStatus } from '../../comments/domain/comment.like.entity';
 
 @Entity()
 export class User {

@@ -6,9 +6,6 @@ import { UserModule } from './features/users/user.module';
 import { DeleteAllController } from './features/zTesting(dropDb)/delete.all';
 import { AuthModule } from './features/auth/auth.module';
 import { DeviceModule } from './features/securityDevices/device.module';
-import { BlogModule } from './features/blogs/blog.module';
-import { PostModule } from './features/posts/post.module';
-import { CommentModule } from './features/comments/comment.module';
 import { HelloPageModule } from './base/hello.page/hello.page';
 
 @Module({
