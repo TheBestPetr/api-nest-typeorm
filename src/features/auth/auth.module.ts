@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RefreshTokenEntity } from './domain/refresh.token.entity';
+import { RefreshToken } from './domain/refresh.token.entity';
 import { AuthController } from './api/auth.controller';
 import { BcryptService } from '../../infrastructure/utils/services/bcrypt.service';
 import { UsersRepository } from '../users/infrastructure/sql/users.repository';
@@ -13,7 +13,7 @@ import { UsersQueryRepository } from '../users/infrastructure/sql/users.query.re
 import { RefreshTokenRepository } from './infrastructure/sql/refrest.token.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RefreshTokenEntity])],
+  imports: [TypeOrmModule.forFeature([RefreshToken])],
   controllers: [AuthController],
   providers: [
     BcryptService,

@@ -1,8 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class PostLikeEntity {
-  @Column({ type: 'uuid' })
+  @PrimaryColumn({ type: 'uuid' })
   postId: string;
 
   @Column({ type: 'uuid' })
@@ -14,6 +14,6 @@ export class PostLikeEntity {
   @Column({ enum: ['None', 'Like', 'Dislike'] })
   status: string;
 
-  @Column({ type: 'timestamp with time zone' })
+  @CreateDateColumn({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 }

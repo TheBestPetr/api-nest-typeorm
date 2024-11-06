@@ -1,32 +1,20 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
-@Entity()
-export class CommentatorInfo {
-  @Column({ type: 'uuid' })
-  commentId: string;
-
-  @Column({ type: 'uuid' })
-  userId: string;
-
-  @Column({ type: 'varchar', length: 10 })
-  userLogin: string;
-}
-
-@Entity()
-export class LikesInfo {
-  @Column()
-  commentId: string;
-
-  @Column({ type: 'integer' })
-  likesCount: number;
-
-  @Column({ type: 'integer' })
-  dislikesCount: number;
-}
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Post } from '../../posts/domain/post.entity';
+import { User } from '../../users/domain/user.entity';
+import { CommentUserLikeStatus } from './comment.like.entity';
 
 @Entity()
 export class Comment {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'uuid' })
@@ -37,4 +25,32 @@ export class Comment {
 
   @Column({ type: 'timestamp with time zone' })
   createdAt: string;
+
+  @ManyToOne(() => Post, (post) => post.comments)
+  @JoinColumn()
+  post: Post;
+
+  @OneToMany(() => CommentUserLikeStatus, (user) => user.comment)
+  @JoinColumn()
+  likeStatus: CommentUserLikeStatus;
+}
+
+@Entity()
+export class CommentatorInfo {
+  @PrimaryColumn({ type: 'uuid' })
+  commentId: string;
+
+  @PrimaryColumn({ type: 'uuid' })
+  userId: string;
+
+  @Column({ type: 'varchar', length: 10 })
+  userLogin: string;
+
+  @OneToOne(() => Comment, (comment) => comment.id)
+  @JoinColumn()
+  comment: Comment;
+
+  @OneToOne(() => User, (user) => user.id)
+  @JoinColumn()
+  user: User;
 }

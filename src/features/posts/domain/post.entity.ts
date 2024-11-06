@@ -1,8 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Blog } from '../../blogs/domain/blog.entity';
+import { Comment } from '../../comments/domain/comment.entity';
 
 @Entity()
 export class Post {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'varchar', length: 30 })
@@ -20,12 +30,20 @@ export class Post {
   @Column({ type: 'varchar' })
   blogName: string;
 
-  @Column({ type: 'timestamp with time zone' })
+  @CreateDateColumn({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', default: 0 })
   likesCount: number;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', default: 0 })
   dislikesCount: number;
+
+  @ManyToOne(() => Blog, (blog) => blog.posts)
+  @JoinColumn()
+  blog: Blog;
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  @JoinColumn()
+  comments: Comment[];
 }

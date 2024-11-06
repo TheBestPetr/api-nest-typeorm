@@ -2,6 +2,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SETTINGS } from './settings/app.settings';
 import * as process from 'process';
+import { UserModule } from './features/users/user.module';
+import { DeleteAllController } from './features/zTesting(dropDb)/delete.all';
+import { AuthModule } from './features/auth/auth.module';
+import { DeviceModule } from './features/securityDevices/device.module';
+import { BlogModule } from './features/blogs/blog.module';
+import { PostModule } from './features/posts/post.module';
+import { CommentModule } from './features/comments/comment.module';
+import { HelloPageModule } from './base/hello.page/hello.page';
 
 @Module({
   imports: [
@@ -9,13 +17,13 @@ import * as process from 'process';
     process.env.DB_CONNECTION === 'NEON'
       ? SETTINGS.DB_CONNECTION.CONNECT_TO_NEON_DB
       : SETTINGS.DB_CONNECTION.CONNECT_TO_TEST_DB,
-    /*AuthModule,
-    DeviceModule,
     UserModule,
-    BlogModule,
-    PostModule,
-    CommentModule,
-    HelloPageModule,*/
+    AuthModule,
+    DeviceModule,
+    //BlogModule,
+    //PostModule,
+    //CommentModule,
+    HelloPageModule,
   ],
 
   providers: [
@@ -26,8 +34,6 @@ import * as process from 'process';
     emailResendingIsEmailConfirmed,*/
   ],
 
-  controllers: [
-    /*DeleteAllController*/
-  ],
+  controllers: [DeleteAllController],
 })
 export class AppModule {}

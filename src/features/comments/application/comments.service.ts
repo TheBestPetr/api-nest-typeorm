@@ -7,7 +7,7 @@ import { Comment, CommentatorInfo } from '../domain/comment.entity';
 import { CommentsQueryRepository } from '../infrastructure/sql/comments.query.repository';
 import { LikeStatus } from '../../../base/types/like.statuses';
 import { CommentsLikeInfoRepository } from '../infrastructure/sql/comments.like.info.repository';
-import { CommentLikeEntity } from '../domain/comment.like.entity';
+import { CommentUserLikeStatus } from '../domain/comment.like.entity';
 
 @Injectable()
 export class CommentsService {
@@ -82,7 +82,7 @@ export class CommentsService {
       );
     const user = await this.usersQueryRepository.findUserById(userId);
     if (!commentLikeInfo[0]?.status) {
-      const newCommentLikeInfo = new CommentLikeEntity();
+      const newCommentLikeInfo = new CommentUserLikeStatus();
       newCommentLikeInfo.commentId = commentId;
       newCommentLikeInfo.userId = user.userId;
       newCommentLikeInfo.status = inputLikeStatus;

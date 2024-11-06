@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { CommentLikeEntity } from '../../domain/comment.like.entity';
+import { CommentUserLikeStatus } from '../../domain/comment.like.entity';
 import { LikeStatus } from '../../../../base/types/like.statuses';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class CommentsLikeInfoRepository {
   }
 
   async createNewLikeInfo(
-    commentLikeInfo: CommentLikeEntity,
+    commentLikeInfo: CommentUserLikeStatus,
   ): Promise<boolean> {
     return this.dataSource.query(
       `INSERT INTO public."commentsUserLikeInfo"(

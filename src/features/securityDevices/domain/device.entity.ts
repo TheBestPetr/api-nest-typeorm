@@ -1,8 +1,9 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { User } from '../../users/domain/user.entity';
 
 @Entity()
 export class Device {
-  @Column({ type: 'uuid' })
+  @PrimaryColumn({ type: 'uuid' })
   userId: string;
 
   @Column({ type: 'uuid' })
@@ -19,4 +20,8 @@ export class Device {
 
   @Column({ type: 'timestamp with time zone' })
   exp: string;
+
+  @ManyToOne(() => User, (user) => user.devices)
+  @JoinColumn()
+  user: User;
 }
