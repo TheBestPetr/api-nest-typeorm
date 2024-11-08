@@ -3,10 +3,10 @@ import { User } from '../../users/domain/user.entity';
 
 @Entity()
 export class Device {
-  @PrimaryColumn({ type: 'uuid' })
+  @Column({ type: 'uuid' })
   userId: string;
 
-  @Column({ type: 'uuid' })
+  @PrimaryColumn({ type: 'uuid' })
   deviceId: string;
 
   @Column({ type: 'timestamp with time zone' })

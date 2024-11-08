@@ -15,7 +15,7 @@ export class DevicesRepo {
   ) {}
 
   async createDevice(device: Device): Promise<boolean> {
-    const result = await this.devicesRepo.save(device);
+    const result = await this.devicesRepo.insert(device);
     return !!result;
   }
 
@@ -63,9 +63,9 @@ export class DevicesRepo {
   }
 
   async deleteAllSessions(deviceId: string): Promise<boolean> {
-    const isAllSessionsDelete = await this.devicesRepo.delete({
+    await this.devicesRepo.delete({
       deviceId: Not(deviceId),
     });
-    return isAllSessionsDelete.affected === 1;
+    return true;
   }
 }
