@@ -17,6 +17,8 @@ import {
 import { JwtService } from './infrastructure/utils/services/jwt.service';
 import { BcryptService } from './infrastructure/utils/services/bcrypt.service';
 import { NodemailerService } from './infrastructure/utils/services/nodemailer.service';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { NodemailerService } from './infrastructure/utils/services/nodemailer.se
     process.env.DB_CONNECTION === 'NEON'
       ? SETTINGS.DB_CONNECTION.CONNECT_TO_NEON_DB
       : SETTINGS.DB_CONNECTION.CONNECT_TO_TEST_DB,
+    SETTINGS.REQ_COUNTER,
     UserModule,
     AuthModule,
     DeviceModule,

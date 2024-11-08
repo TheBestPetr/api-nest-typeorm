@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import * as process from 'process';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 config();
 
@@ -39,4 +40,11 @@ export const SETTINGS = {
     PASSWORD: process.env.BASIC_PASSWORD || '',
   },
   JWT_SECRET: process.env.JWT_SECRET || '',
+
+  REQ_COUNTER: ThrottlerModule.forRoot([
+    {
+      ttl: 10000,
+      limit: 5,
+    },
+  ]),
 };

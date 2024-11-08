@@ -4,7 +4,7 @@ import { SETTINGS } from '../../../settings/app.settings';
 export class JwtService {
   createAccessJWTToken(userId: string) {
     return jwt.sign({ userId: userId }, SETTINGS.JWT_SECRET, {
-      expiresIn: '5m',
+      expiresIn: '10s',
     });
   }
 
@@ -21,7 +21,7 @@ export class JwtService {
     return jwt.sign(
       { userId: userId, deviceId: deviceId },
       SETTINGS.JWT_SECRET,
-      { expiresIn: '5m' },
+      { expiresIn: '20s' },
     );
   }
 

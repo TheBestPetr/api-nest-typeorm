@@ -21,6 +21,7 @@ import {
   AuthInputRegistrationDto,
 } from './dto/input/auth.input.dto';
 import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +29,8 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly usersQueryRepo: UsersQueryRepo,
   ) {}
-  //@UseGuards(ReqIpCounter)
+
+  @UseGuards(ThrottlerGuard)
   @Post('registration')
   @HttpCode(204)
   async userRegistration(@Body() userInputDto: AuthInputRegistrationDto) {
@@ -38,7 +40,7 @@ export class AuthController {
     }
   }
 
-  //@UseGuards(ReqIpCounter)
+  @UseGuards(ThrottlerGuard)
   @Post('login')
   @HttpCode(200)
   async loginUser(
@@ -90,7 +92,7 @@ export class AuthController {
     return { accessToken: newTokens.accessToken };
   }
 
-  //@UseGuards(ReqIpCounter)
+  @UseGuards(ThrottlerGuard)
   @Post('registration-confirmation')
   @HttpCode(204)
   async userRegistrationConfirmation(
@@ -102,7 +104,7 @@ export class AuthController {
     }
   }
 
-  //@UseGuards(ReqIpCounter)
+  @UseGuards(ThrottlerGuard)
   @Post('registration-email-resending')
   @HttpCode(204)
   async userRegistrationEmailResending(
@@ -118,7 +120,7 @@ export class AuthController {
     }
   }
 
-  //@UseGuards(ReqIpCounter)
+  @UseGuards(ThrottlerGuard)
   @Post('password-recovery')
   @HttpCode(204)
   async passwordRecovery(@Body() input: AuthInputEmailPasswordRecoveryDto) {
@@ -128,7 +130,7 @@ export class AuthController {
     }
   }
 
-  //@UseGuards(ReqIpCounter)
+  @UseGuards(ThrottlerGuard)
   @Post('new-password')
   @HttpCode(204)
   async newPasswordConfirmation(
