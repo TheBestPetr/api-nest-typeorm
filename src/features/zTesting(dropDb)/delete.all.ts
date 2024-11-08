@@ -11,8 +11,10 @@ export class DeleteAllController {
     await this.dataSource.query(`
       TRUNCATE 
         public.user,
-        public."device",
-        public."refresh_token"
+        public.device,
+        public."refresh_token_black_list",
+        public."user_email_confirmation",
+        public."user_password_recovery"
          CASCADE
       `);
   }
