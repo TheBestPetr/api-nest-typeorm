@@ -24,7 +24,7 @@ export class helloPageController {
       const isUserExist = await this.dataSource.query(
         `
       SELECT "login"
-        FROM public.users
+        FROM public.user
         WHERE "id" = $1`,
         [req.userId],
       );
