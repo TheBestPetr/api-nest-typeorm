@@ -35,7 +35,23 @@ export class passwordRecoveryCodeIsExist
 
 @ValidatorConstraint({ name: 'loginOrEmailIsExist', async: true })
 @Injectable()
-export class loginOrEmailIsExist implements ValidatorConstraintInterface {
+export class loginIsExist implements ValidatorConstraintInterface {
+  constructor(private readonly usersRepo: UsersRepo) {}
+
+  async validate(loginOrEmail: string) {
+    const user = await this.usersRepo.findUserByLoginOrEmail(loginOrEmail);
+    if (user) {
+      throw new BadRequestException([
+        { message: 'Email is already exist', field: 'login' },
+      ]);
+    }
+    return true;
+  }
+}
+
+@ValidatorConstraint({ name: 'loginOrEmailIsExist', async: true })
+@Injectable()
+export class emailIsExist implements ValidatorConstraintInterface {
   constructor(private readonly usersRepo: UsersRepo) {}
 
   async validate(loginOrEmail: string) {

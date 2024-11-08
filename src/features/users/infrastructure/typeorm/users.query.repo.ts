@@ -30,7 +30,12 @@ export class UsersQueryRepo {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: count,
-      items: items,
+      items: items.map((user) => ({
+        id: user.id,
+        login: user.login,
+        email: user.email,
+        createdAt: user.createdAt,
+      })),
     };
   }
 

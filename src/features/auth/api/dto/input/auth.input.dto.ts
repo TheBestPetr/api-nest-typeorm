@@ -7,8 +7,9 @@ import {
 } from 'class-validator';
 import {
   emailConfirmationCodeIsExist,
+  emailIsExist,
   emailResendingIsEmailConfirmed,
-  loginOrEmailIsExist,
+  loginIsExist,
   passwordRecoveryCodeIsExist,
 } from '../../../../../infrastructure/decorators/auth.custom.decorator';
 import { Transform, TransformFnParams } from 'class-transformer';
@@ -31,7 +32,7 @@ export class AuthInputRegistrationDto {
   @IsNotEmpty()
   @Length(3, 10)
   @Transform(({ value }: TransformFnParams) => value?.trim())
-  @Validate(loginOrEmailIsExist)
+  @Validate(loginIsExist)
   login: string;
 
   @IsString()
@@ -43,7 +44,7 @@ export class AuthInputRegistrationDto {
   @IsString()
   @IsNotEmpty()
   @IsEmail()
-  @Validate(loginOrEmailIsExist)
+  @Validate(emailIsExist)
   email: string;
 }
 

@@ -9,8 +9,9 @@ import { DeviceModule } from './features/securityDevices/device.module';
 import { HelloPageModule } from './base/hello.page/hello.page';
 import {
   emailConfirmationCodeIsExist,
+  emailIsExist,
   emailResendingIsEmailConfirmed,
-  loginOrEmailIsExist,
+  loginIsExist,
   passwordRecoveryCodeIsExist,
 } from './infrastructure/decorators/auth.custom.decorator';
 import { JwtService } from './infrastructure/utils/services/jwt.service';
@@ -36,7 +37,8 @@ import { NodemailerService } from './infrastructure/utils/services/nodemailer.se
     BcryptService,
     NodemailerService,
     JwtService,
-    loginOrEmailIsExist,
+    loginIsExist,
+    emailIsExist,
     passwordRecoveryCodeIsExist,
     emailConfirmationCodeIsExist,
     emailResendingIsEmailConfirmed,
