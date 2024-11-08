@@ -15,7 +15,7 @@ export class NodemailerService {
       },
     });
     const info = await transport.sendMail({
-      from: 'Ignat <process.env.EMAIL_ACCOUNT_USER>',
+      from: 'Ignat <SETTINGS.NODEMAILER.USER>',
       to: email,
       subject: subject,
       html: `<h1>Thanks for your registration</h1> 
@@ -39,7 +39,7 @@ export class NodemailerService {
       },
     });
     const info = await transport.sendMail({
-      from: 'Ignat <process.env.EMAIL_ACCOUNT_USER>',
+      from: 'Ignat <SETTINGS.NODEMAILER.USER>',
       to: email,
       subject: subject,
       html: `<h1>Password recovery</h1> 

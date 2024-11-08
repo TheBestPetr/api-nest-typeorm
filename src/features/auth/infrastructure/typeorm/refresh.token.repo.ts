@@ -7,17 +7,19 @@ import { Repository } from 'typeorm';
 export class RefreshTokenBlackListRepo {
   constructor(
     @InjectRepository(RefreshTokenBlackList)
-    private readonly refreshTokenRepo: Repository<RefreshTokenBlackList>,
+    private readonly refreshTokenBlackListRepo: Repository<RefreshTokenBlackList>,
   ) {}
 
   async addTokenInBlacklist(token: string) {
     const newToken = new RefreshTokenBlackList();
     newToken.token = token;
-    await this.refreshTokenRepo.save(newToken);
+    await this.refreshTokenBlackListRepo.save(newToken);
   }
 
   async isTokenInBlacklist(token: string): Promise<boolean> {
-    const isTokenInBL = await this.refreshTokenRepo.findOneBy({ token: token });
+    const isTokenInBL = await this.refreshTokenBlackListRepo.findOneBy({
+      token: token,
+    });
     return !!isTokenInBL;
   }
 }

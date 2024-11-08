@@ -5,9 +5,9 @@ import { CommentInputQueryDto } from '../../features/comments/api/dto/input/comm
 
 export const sortNPagingBlogQuery = (query: BlogInputQueryDto) => {
   return {
-    searchNameTerm: query.searchNameTerm ? query.searchNameTerm : null,
-    sortBy: query.sortBy ? query.sortBy : 'createdAt',
-    sortDirection: query.sortDirection ? query.sortDirection : 'desc',
+    searchNameTerm: query.searchNameTerm ?? null,
+    sortBy: query.sortBy ?? 'createdAt',
+    sortDirection: query.sortDirection ?? 'desc',
     pageNumber: query.pageNumber ? +query.pageNumber : 1,
     pageSize: query.pageSize ? +query.pageSize : 10,
   };
@@ -15,8 +15,8 @@ export const sortNPagingBlogQuery = (query: BlogInputQueryDto) => {
 
 export const sortNPagingPostQuery = (query: PostInputQueryDto) => {
   return {
-    sortBy: query.sortBy ? query.sortBy : 'createdAt',
-    sortDirection: query.sortDirection ? query.sortDirection : 'desc',
+    sortBy: query.sortBy ?? 'createdAt',
+    sortDirection: query.sortDirection ?? 'desc',
     pageNumber: query.pageNumber ? +query.pageNumber : 1,
     pageSize: query.pageSize ? +query.pageSize : 10,
   };
@@ -41,7 +41,7 @@ export const sortNPagingCommentQuery = (
   return {
     pageNumber: query.pageNumber ? +query.pageNumber : 1,
     pageSize: query.pageSize ? +query.pageSize : 10,
-    sortBy: query.sortBy ? query.sortBy : 'createdAt',
-    sortDirection: query.sortDirection ? query.sortDirection : 'desc',
+    sortBy: query.sortBy ?? 'createdAt',
+    sortDirection: query.sortDirection ?? 'desc',
   };
 };

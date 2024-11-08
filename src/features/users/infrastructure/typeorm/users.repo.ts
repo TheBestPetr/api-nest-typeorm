@@ -67,7 +67,7 @@ export class UsersRepo {
   async updateAccessUserEmailConfirmation(id: string): Promise<boolean> {
     const result = await this.userEmailConfirmationRepo.update(
       { userId: id },
-      { expirationDate: null, isConfirmed: true },
+      { confirmationCode: null, expirationDate: null, isConfirmed: true },
     );
     return result.affected === 1;
   }
