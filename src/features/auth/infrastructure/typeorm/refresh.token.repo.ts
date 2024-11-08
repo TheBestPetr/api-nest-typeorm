@@ -10,7 +10,12 @@ export class RefreshTokenRepo {
     private readonly refreshTokenRepo: Repository<RefreshToken>,
   ) {}
 
-  /*async addTokenInBlacklist(token: string) {
+  async addTokenInBlacklist(token: RefreshToken) {
     await this.refreshTokenRepo.save(token);
-  }*/
+  }
+
+  async isTokenInBlacklist(token: string): Promise<boolean> {
+    const isTokenInBL = await this.refreshTokenRepo.findOneBy({ token: token });
+    return !!isTokenInBL;
+  }
 }

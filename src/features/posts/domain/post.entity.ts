@@ -33,12 +33,6 @@ export class Post {
   @CreateDateColumn({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 
-  @Column({ type: 'integer', default: 0 })
-  likesCount: number;
-
-  @Column({ type: 'integer', default: 0 })
-  dislikesCount: number;
-
   @ManyToOne(() => Blog, (blog) => blog.posts)
   @JoinColumn()
   blog: Blog;
@@ -46,4 +40,8 @@ export class Post {
   @OneToMany(() => Comment, (comment) => comment.post)
   @JoinColumn()
   comments: Comment[];
+
+  /*@OneToMany(() => PostUserLikeStatus, (user) => user.post)
+  @JoinColumn()
+  likeStatuses: PostUserLikeStatus[];*/
 }

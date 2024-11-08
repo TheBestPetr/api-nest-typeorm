@@ -1,32 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { UserInputDto } from '../../users/api/dto/input/user.input.dto';
 import {
-  EmailConfirmation,
-  PasswordRecovery,
+  UserEmailConfirmation,
+  UserPasswordRecovery,
   User,
 } from '../../users/domain/user.entity';
 import { add } from 'date-fns';
 import { BcryptService } from '../../../infrastructure/utils/services/bcrypt.service';
-import { UsersRepository } from '../../users/infrastructure/sql/users.repository';
 import { NodemailerService } from '../../../infrastructure/utils/services/nodemailer.service';
 import { randomUUID } from 'node:crypto';
 import { JwtService } from '../../../infrastructure/utils/services/jwt.service';
 import { AuthInputLoginDto } from '../api/dto/input/auth.input.dto';
 import { TokensType } from '../../../base/types/tokens.type';
-import { DevicesRepository } from '../../securityDevices/infrastructure/sql/devices.repository';
 import { DevicesService } from '../../securityDevices/application/devices.service';
 import { Device } from '../../securityDevices/domain/device.entity';
 import { RefreshTokenRepository } from '../infrastructure/sql/refrest.token.repository';
+import { UsersRepo } from '../../users/infrastructure/typeorm/users.repo';
+import { UsersRepository } from '../../users/infrastructure/sql/users.repository';
+import { DevicesRepo } from '../../securityDevices/infrastructure/typeorm/devices.repo';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly bcryptService: BcryptService,
+    private readonly usersRepo: UsersRepo,
     private readonly usersRepository: UsersRepository,
     private readonly nodemailerService: NodemailerService,
     private readonly jwtService: JwtService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
-    private readonly devicesRepository: DevicesRepository,
+    private readonly devicesRepo: DevicesRepo,
     private readonly devicesService: DevicesService,
   ) {}
   async checkCredentials(input: AuthInputLoginDto): Promise<string | null> {
@@ -56,12 +58,12 @@ export class AuthService {
     createdUser.passwordHash = passwordHash;
     createdUser.email = input.email;
 
-    const userEmailConfirmation = new EmailConfirmation();
+    const userEmailConfirmation = new UserEmailConfirmation();
     userEmailConfirmation.confirmationCode = randomUUID().toString();
     userEmailConfirmation.expirationDate = expDate;
     userEmailConfirmation.isConfirmed = false;
 
-    await this.usersRepository.createUser(createdUser, userEmailConfirmation);
+    await this.usersRepo.createUser(createdUser, userEmailConfirmation);
 
     this.nodemailerService
       .sendRegistrationEmail(
@@ -87,15 +89,15 @@ export class AuthService {
       newDeviceId,
     );
     const iatNExp = await this.jwtService.getTokenIatNExp(refreshToken);
-    const newDevice = new Device();
-    newDevice.userId = userId;
-    newDevice.deviceId = newDeviceId;
-    newDevice.iat = new Date(iatNExp!.iat * 1000).toISOString();
-    newDevice.deviceName = deviceName;
-    newDevice.ip = ip;
-    newDevice.exp = new Date(iatNExp!.exp * 1000).toISOString();
+    const device = new Device();
+    device.userId = userId;
+    device.deviceId = newDeviceId;
+    device.iat = new Date(iatNExp!.iat * 1000).toISOString();
+    device.deviceName = deviceName;
+    device.ip = ip;
+    device.exp = new Date(iatNExp!.exp * 1000).toISOString();
 
-    await this.devicesService.createDevice(newDevice);
+    await this.devicesService.createDevice(device);
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
@@ -108,11 +110,11 @@ export class AuthService {
       await this.refreshTokenRepository.isTokenInBlacklist(refreshToken);
     const deviceId = this.jwtService.getDeviceIdByToken(refreshToken);
     const isDeviceExist =
-      await this.devicesRepository.findSessionByDeviceId(deviceId);
+      await this.devicesRepo.findSessionByDeviceId(deviceId);
     if (!userId || isTokenInBlacklist || !isDeviceExist) {
       return false;
     }
-    await this.devicesRepository.deleteSessionByDeviceId(deviceId);
+    await this.devicesRepo.deleteSessionByDeviceId(deviceId);
     await this.refreshTokenRepository.addTokenInBlacklist(refreshToken);
     return true;
   }
@@ -127,7 +129,7 @@ export class AuthService {
     }
     const oldIat = await this.jwtService.getTokenIatNExp(refreshToken);
     const isDeviceExist =
-      await this.devicesRepository.findSessionByDeviceId(deviceId);
+      await this.devicesRepo.findSessionByDeviceId(deviceId);
     if (!userId || isTokenInBlacklist || !isDeviceExist) {
       return null;
     }
@@ -167,7 +169,7 @@ export class AuthService {
   async confirmUserEmailResending(email: string): Promise<boolean> {
     const user = await this.usersRepository.findUserByLoginOrEmail(email);
     if (user.length > 0) {
-      const userEmailConfirmation = new EmailConfirmation();
+      const userEmailConfirmation = new UserEmailConfirmation();
       userEmailConfirmation.confirmationCode = randomUUID().toString();
       userEmailConfirmation.expirationDate = add(new Date(), {
         hours: 1,
@@ -196,7 +198,7 @@ export class AuthService {
   async passwordRecovery(email: string): Promise<boolean> {
     const user = await this.usersRepository.findUserByLoginOrEmail(email);
     if (user.length > 0) {
-      const userPasswordRecovery = new PasswordRecovery();
+      const userPasswordRecovery = new UserPasswordRecovery();
       userPasswordRecovery.userId = user[0].id;
       userPasswordRecovery.recoveryCode = randomUUID().toString();
       userPasswordRecovery.expirationDate = add(new Date(), {

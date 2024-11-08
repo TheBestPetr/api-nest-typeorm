@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 
 export class UserInputDto {
@@ -16,7 +16,7 @@ export class UserInputDto {
 
   @IsString()
   @IsNotEmpty()
-  @Matches('[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+  @IsEmail()
   email: string;
 }
 

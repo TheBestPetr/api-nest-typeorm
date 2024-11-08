@@ -5,7 +5,7 @@ import { PostOutputDto } from '../api/dto/output/post.output.dto';
 import { BlogsQueryRepository } from '../../blogs/infrastructure/sql/blogs.query.repository';
 import { Post } from '../domain/post.entity';
 import { LikeStatus } from '../../../base/types/like.statuses';
-import { PostLikeEntity } from '../domain/post.like.entity';
+import { PostUserLikeStatus } from '../domain/post.like.entity';
 import { UsersQueryRepository } from '../../users/infrastructure/sql/users.query.repository';
 import { PostsLikeInfoRepository } from '../infrastructure/sql/posts.like.info.repository';
 
@@ -71,7 +71,7 @@ export class PostsService {
     );
     const user = await this.usersQueryRepository.findUserById(userId);
     if (!postLikesInfo[0]?.status) {
-      const newPostLikeInfo = new PostLikeEntity();
+      const newPostLikeInfo = new PostUserLikeStatus();
       newPostLikeInfo.postId = postId;
       newPostLikeInfo.userId = userId;
       newPostLikeInfo.userLogin = user!.login;

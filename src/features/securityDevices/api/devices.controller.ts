@@ -10,18 +10,18 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { DevicesService } from '../application/devices.service';
-import { DevicesRepository } from '../infrastructure/sql/devices.repository';
+import { DevicesRepo } from '../infrastructure/typeorm/devices.repo';
 
 @Controller('security/devices')
 export class DevicesController {
   constructor(
     private readonly devicesService: DevicesService,
-    private readonly devicesRepository: DevicesRepository,
+    private readonly devicesRepo: DevicesRepo,
   ) {}
   @Get()
   @HttpCode(200)
   async getAllDevicesWithActiveSession(@Request() req) {
-    const activeSessions = await this.devicesRepository.findActiveSessions(
+    const activeSessions = await this.devicesRepo.findAllActiveSessions(
       req.cookies.refreshToken,
     );
     if (!activeSessions) {
@@ -50,9 +50,11 @@ export class DevicesController {
     @Request() req,
     @Param('deviceId') deviceId: string,
   ) {
-    const sessionToTerminate =
-      await this.devicesService.findSessionToTerminate(deviceId);
-    if (!sessionToTerminate) {
+    if (!deviceId) {
+      throw new NotFoundException();
+    }
+    const session = await this.devicesService.findSessionByDeviceId(deviceId);
+    if (!session) {
       throw new NotFoundException();
     }
     if (!req.cookies.refreshToken) {

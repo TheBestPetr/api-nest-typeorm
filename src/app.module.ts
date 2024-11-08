@@ -7,6 +7,7 @@ import { DeleteAllController } from './features/zTesting(dropDb)/delete.all';
 import { AuthModule } from './features/auth/auth.module';
 import { DeviceModule } from './features/securityDevices/device.module';
 import { HelloPageModule } from './base/hello.page/hello.page';
+import { loginOrEmailIsExist } from './infrastructure/decorators/auth.custom.decorator';
 
 @Module({
   imports: [
@@ -24,9 +25,8 @@ import { HelloPageModule } from './base/hello.page/hello.page';
   ],
 
   providers: [
-    /*loginIsExist,
-    emailIsExist,
-    passwordRecoveryCodeIsExist,
+    loginOrEmailIsExist,
+    /*passwordRecoveryCodeIsExist,
     emailConfirmationCodeIsExist,
     emailResendingIsEmailConfirmed,*/
   ],

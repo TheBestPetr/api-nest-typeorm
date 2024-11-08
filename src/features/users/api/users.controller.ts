@@ -12,24 +12,24 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../application/users.service';
 import { UserInputDto, UserInputQueryDto } from './dto/input/user.input.dto';
-import { UsersQueryRepository } from '../infrastructure/sql/users.query.repository';
 import { sortNPagingUserQuery } from '../../../infrastructure/utils/query.mappers';
 import { BasicAuthGuard } from '../../../infrastructure/guards/basic.auth.guard';
 import { isUUID } from 'class-validator';
+import { UsersQueryRepo } from '../infrastructure/typeorm/users.query.repo';
 
 @Controller('sa/users')
 @UseGuards(BasicAuthGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersQueryRepo: UsersQueryRepo,
   ) {}
 
   @Get()
   @HttpCode(200)
   async findUsers(@Query() inputQuery: Partial<UserInputQueryDto>) {
     const query = sortNPagingUserQuery(inputQuery);
-    const users = await this.usersQueryRepository.findUsers(query);
+    const users = await this.usersQueryRepo.findUsers(query);
     return users;
   }
 

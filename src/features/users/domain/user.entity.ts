@@ -31,13 +31,17 @@ export class User {
   @JoinColumn()
   devices: Device[];
 
+  //@OneToMany(() => PostUserLikeStatus, (postLikes) => postLikes.user)
+  //@JoinColumn()
+  //userPostsLikes: PostUserLikeStatus;
+
   //@OneToMany(() => CommentUserLikeStatus, (commentLikes) => commentLikes.user)
   //@JoinColumn()
   // userCommentLikes: CommentUserLikeStatus[];
 }
 
 @Entity()
-export class EmailConfirmation {
+export class UserEmailConfirmation {
   @PrimaryColumn({ type: 'uuid' })
   userId: string;
 
@@ -56,7 +60,7 @@ export class EmailConfirmation {
 }
 
 @Entity()
-export class PasswordRecovery {
+export class UserPasswordRecovery {
   @PrimaryColumn({ type: 'uuid' })
   userId: string | null;
 

@@ -1,29 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '../../../infrastructure/utils/services/jwt.service';
-import { DevicesRepository } from '../infrastructure/sql/devices.repository';
 import { Device } from '../domain/device.entity';
+import { DevicesRepo } from '../infrastructure/typeorm/devices.repo';
 
 @Injectable()
 export class DevicesService {
   constructor(
+    private readonly devicesRepo: DevicesRepo,
     private readonly jwtService: JwtService,
-    private readonly devicesRepository: DevicesRepository,
   ) {}
-  async createDevice(input: Device): Promise<boolean> {
-    return this.devicesRepository.create(input);
+  async createDevice(device: Device): Promise<boolean> {
+    return this.devicesRepo.createDevice(device);
   }
 
   async updateDeviceIatNExp(
     deviceId: string,
     oldIat: string,
-    iat: string,
-    exp: string,
+    newIat: string,
+    newExp: string,
   ): Promise<boolean> {
-    return this.devicesRepository.updateIatNExp(deviceId, oldIat, iat, exp);
+    return this.devicesRepo.updateDeviceIatNExp(
+      deviceId,
+      oldIat,
+      newIat,
+      newExp,
+    );
   }
 
-  async findSessionToTerminate(deviceId: string): Promise<string | null> {
-    return this.devicesRepository.findSessionByDeviceId(deviceId);
+  async findSessionByDeviceId(deviceId: string): Promise<string | null> {
+    return this.devicesRepo.findSessionByDeviceId(deviceId);
   }
 
   async isUserCanTerminateSession(
@@ -31,16 +36,16 @@ export class DevicesService {
     deviceId: string,
   ): Promise<boolean> {
     const userId = this.jwtService.getUserIdByToken(refreshToken);
-    const isSessionBelongsToUser =
-      await this.devicesRepository.findSessionByDeviceId(deviceId);
-    if (userId !== isSessionBelongsToUser) {
+    const deviceOwnerId =
+      await this.devicesRepo.findSessionByDeviceId(deviceId);
+    if (userId !== deviceOwnerId) {
       return false;
     }
-    return this.devicesRepository.deleteSessionByDeviceId(deviceId);
+    return this.devicesRepo.deleteSessionByDeviceId(deviceId);
   }
 
   async terminateAllSessions(refreshToken: string): Promise<boolean> {
     const deviceId = this.jwtService.getDeviceIdByToken(refreshToken);
-    return this.devicesRepository.deleteAllSessions(deviceId);
+    return this.devicesRepo.deleteAllSessions(deviceId);
   }
 }

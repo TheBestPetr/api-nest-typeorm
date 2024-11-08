@@ -4,13 +4,10 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Post } from '../../posts/domain/post.entity';
-import { User } from '../../users/domain/user.entity';
-import { CommentUserLikeStatus } from './comment.like.entity';
 
 @Entity()
 export class Comment {
@@ -30,9 +27,9 @@ export class Comment {
   @JoinColumn()
   post: Post;
 
-  @OneToMany(() => CommentUserLikeStatus, (user) => user.comment)
+  /*@OneToMany(() => CommentUserLikeStatus, (user) => user.comment)
   @JoinColumn()
-  likeStatus: CommentUserLikeStatus;
+  likeStatuses: CommentUserLikeStatus[];*/
 }
 
 @Entity()
@@ -46,11 +43,11 @@ export class CommentatorInfo {
   @Column({ type: 'varchar', length: 10 })
   userLogin: string;
 
-  @OneToOne(() => Comment, (comment) => comment.id)
+  /*@OneToOne(() => Comment, (comment) => comment.id)
   @JoinColumn()
-  comment: Comment;
+  comment: Comment;*/
 
-  @OneToOne(() => User, (user) => user.id)
+  /*@ManyToOne(() => User, (user) => user.id)
   @JoinColumn()
-  user: User;
+  user: User;*/
 }

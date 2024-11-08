@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
@@ -23,9 +22,9 @@ export class CommentUserLikeStatus {
   @CreateDateColumn({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 
-  @ManyToOne(() => Comment, (comment) => comment.likeStatus)
+  /*@ManyToOne(() => Comment, (comment) => comment.likeStatuses)
   @JoinColumn()
-  comment: Comment;
+  comment: Comment;*/
 
   //@ManyToOne(() => User, (user) => user.userCommentLikes)
   // @JoinColumn()

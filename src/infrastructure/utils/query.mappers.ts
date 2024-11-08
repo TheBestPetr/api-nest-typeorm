@@ -26,12 +26,12 @@ export const sortNPagingUserQuery = (
   query: Partial<UserInputQueryDto>,
 ): UserInputQueryDto => {
   return {
-    sortBy: query.sortBy ? query.sortBy : 'createdAt',
-    sortDirection: query.sortDirection ? query.sortDirection : 'desc',
+    sortBy: query.sortBy ?? 'createdAt',
+    sortDirection: query.sortDirection ?? 'desc',
     pageNumber: query.pageNumber ? +query.pageNumber : 1,
     pageSize: query.pageSize ? +query.pageSize : 10,
-    searchLoginTerm: query.searchLoginTerm ? query.searchLoginTerm : null,
-    searchEmailTerm: query.searchEmailTerm ? query.searchEmailTerm : null,
+    searchLoginTerm: query.searchLoginTerm ?? null,
+    searchEmailTerm: query.searchEmailTerm ?? null,
   };
 };
 

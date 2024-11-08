@@ -5,6 +5,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { UsersRepository } from '../../features/users/infrastructure/sql/users.repository';
+import { UsersRepo } from '../../features/users/infrastructure/typeorm/users.repo';
 
 @ValidatorConstraint({ name: 'passwordRecoveryCodeIsExist', async: true })
 @Injectable()
@@ -33,30 +34,14 @@ export class passwordRecoveryCodeIsExist
   }
 }
 
-@ValidatorConstraint({ name: 'loginIsExist', async: true })
+@ValidatorConstraint({ name: 'loginOrEmailIsExist', async: true })
 @Injectable()
-export class loginIsExist implements ValidatorConstraintInterface {
-  constructor(private readonly usersRepository: UsersRepository) {}
+export class loginOrEmailIsExist implements ValidatorConstraintInterface {
+  constructor(private readonly usersRepo: UsersRepo) {}
 
-  async validate(login: string) {
-    const user = await this.usersRepository.findUserByLoginOrEmail(login);
-    if (user.length > 0) {
-      throw new BadRequestException([
-        { message: 'Login is already exist', field: 'login' },
-      ]);
-    }
-    return true;
-  }
-}
-
-@ValidatorConstraint({ name: 'emailIsExist', async: true })
-@Injectable()
-export class emailIsExist implements ValidatorConstraintInterface {
-  constructor(private readonly usersRepository: UsersRepository) {}
-
-  async validate(email: string) {
-    const user = await this.usersRepository.findUserByLoginOrEmail(email);
-    if (user.length > 0) {
+  async validate(loginOrEmail: string) {
+    const user = await this.usersRepo.findUserByLoginOrEmail(loginOrEmail);
+    if (user) {
       throw new BadRequestException([
         { message: 'Email is already exist', field: 'email' },
       ]);
