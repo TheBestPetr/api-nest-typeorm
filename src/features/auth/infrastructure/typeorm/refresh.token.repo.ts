@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RefreshToken } from '../../domain/refresh.token.entity';
+import { RefreshTokenBlackList } from '../../domain/refresh.token.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class RefreshTokenRepo {
+export class RefreshTokenBlackListRepo {
   constructor(
-    @InjectRepository(RefreshToken)
-    private readonly refreshTokenRepo: Repository<RefreshToken>,
+    @InjectRepository(RefreshTokenBlackList)
+    private readonly refreshTokenRepo: Repository<RefreshTokenBlackList>,
   ) {}
 
-  async addTokenInBlacklist(token: RefreshToken) {
-    await this.refreshTokenRepo.save(token);
+  async addTokenInBlacklist(token: string) {
+    const newToken = new RefreshTokenBlackList();
+    newToken.token = token;
+    await this.refreshTokenRepo.save(newToken);
   }
 
   async isTokenInBlacklist(token: string): Promise<boolean> {

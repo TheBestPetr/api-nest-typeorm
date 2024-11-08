@@ -9,9 +9,9 @@ import { PostsQueryRepository } from '../posts/infrastructure/sql/posts.query.re
 import { SaBlogsController } from './api/sa.blogs.controller';
 import { PostsRepository } from '../posts/infrastructure/sql/posts.repository';
 import { BlogsController } from './api/blogs.controller';
-import { UsersQueryRepository } from '../users/infrastructure/sql/users.query.repository';
 import { PostsLikeInfoRepository } from '../posts/infrastructure/sql/posts.like.info.repository';
 import { JwtService } from '../../infrastructure/utils/services/jwt.service';
+import { UsersQueryRepo } from '../users/infrastructure/typeorm/users.query.repo';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Blog])],
@@ -23,7 +23,7 @@ import { JwtService } from '../../infrastructure/utils/services/jwt.service';
     PostsService,
     PostsQueryRepository,
     PostsRepository,
-    UsersQueryRepository,
+    UsersQueryRepo,
     PostsLikeInfoRepository,
     JwtService,
   ],

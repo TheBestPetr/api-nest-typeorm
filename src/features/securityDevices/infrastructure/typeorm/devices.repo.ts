@@ -4,13 +4,13 @@ import { Not, Repository } from 'typeorm';
 import { Device } from '../../domain/device.entity';
 import { DeviceOutputDto } from '../../api/dto/output/device.output.dto';
 import { JwtService } from '../../../../infrastructure/utils/services/jwt.service';
-import { RefreshTokenRepository } from '../../../auth/infrastructure/sql/refrest.token.repository';
+import { RefreshTokenBlackListRepo } from '../../../auth/infrastructure/typeorm/refresh.token.repo';
 
 @Injectable()
 export class DevicesRepo {
   constructor(
     @InjectRepository(Device) private readonly devicesRepo: Repository<Device>,
-    private readonly refreshTokenRepo: RefreshTokenRepository,
+    private readonly refreshTokenBlackListRepo: RefreshTokenBlackListRepo,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -41,7 +41,7 @@ export class DevicesRepo {
     refreshToken: string,
   ): Promise<DeviceOutputDto[] | null> {
     const isTokenInBlackList =
-      await this.refreshTokenRepo.isTokenInBlacklist(refreshToken);
+      await this.refreshTokenBlackListRepo.isTokenInBlacklist(refreshToken);
     const userId = await this.jwtService.getUserIdByToken(refreshToken);
     if (!userId || isTokenInBlackList) {
       return null;

@@ -18,7 +18,7 @@ export class User {
   @Column({ type: 'varchar', length: 10 })
   login: string;
 
-  @Column({ type: 'varchar', select: false })
+  @Column({ type: 'varchar' })
   passwordHash: string;
 
   @Column({ type: 'varchar' })

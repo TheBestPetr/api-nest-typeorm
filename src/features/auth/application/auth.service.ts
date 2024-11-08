@@ -14,34 +14,32 @@ import { AuthInputLoginDto } from '../api/dto/input/auth.input.dto';
 import { TokensType } from '../../../base/types/tokens.type';
 import { DevicesService } from '../../securityDevices/application/devices.service';
 import { Device } from '../../securityDevices/domain/device.entity';
-import { RefreshTokenRepository } from '../infrastructure/sql/refrest.token.repository';
 import { UsersRepo } from '../../users/infrastructure/typeorm/users.repo';
-import { UsersRepository } from '../../users/infrastructure/sql/users.repository';
 import { DevicesRepo } from '../../securityDevices/infrastructure/typeorm/devices.repo';
+import { RefreshTokenBlackListRepo } from '../infrastructure/typeorm/refresh.token.repo';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly bcryptService: BcryptService,
     private readonly usersRepo: UsersRepo,
-    private readonly usersRepository: UsersRepository,
     private readonly nodemailerService: NodemailerService,
     private readonly jwtService: JwtService,
-    private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly refreshTokenBlackListRepo: RefreshTokenBlackListRepo,
     private readonly devicesRepo: DevicesRepo,
     private readonly devicesService: DevicesService,
   ) {}
   async checkCredentials(input: AuthInputLoginDto): Promise<string | null> {
-    const user = await this.usersRepository.findUserByLoginOrEmail(
+    const user = await this.usersRepo.findUserByLoginOrEmail(
       input.loginOrEmail,
     );
-    if (user.length > 0) {
+    if (user) {
       const isPassCorrect = await this.bcryptService.checkPassword(
         input.password,
-        user[0].passwordHash,
+        user.passwordHash,
       );
       if (isPassCorrect) {
-        return user[0].id;
+        return user.id;
       }
     }
     return null;
@@ -107,7 +105,7 @@ export class AuthService {
   async logoutUser(refreshToken: string): Promise<boolean> {
     const userId = this.jwtService.getUserIdByToken(refreshToken);
     const isTokenInBlacklist =
-      await this.refreshTokenRepository.isTokenInBlacklist(refreshToken);
+      await this.refreshTokenBlackListRepo.isTokenInBlacklist(refreshToken);
     const deviceId = this.jwtService.getDeviceIdByToken(refreshToken);
     const isDeviceExist =
       await this.devicesRepo.findSessionByDeviceId(deviceId);
@@ -115,13 +113,13 @@ export class AuthService {
       return false;
     }
     await this.devicesRepo.deleteSessionByDeviceId(deviceId);
-    await this.refreshTokenRepository.addTokenInBlacklist(refreshToken);
+    await this.refreshTokenBlackListRepo.addTokenInBlacklist(refreshToken);
     return true;
   }
 
   async createNewTokens(refreshToken: string): Promise<TokensType | null> {
     const isTokenInBlacklist =
-      await this.refreshTokenRepository.isTokenInBlacklist(refreshToken);
+      await this.refreshTokenBlackListRepo.isTokenInBlacklist(refreshToken);
     const userId = await this.jwtService.getUserIdByToken(refreshToken);
     const deviceId = await this.jwtService.getDeviceIdByToken(refreshToken);
     if (!deviceId) {
@@ -133,7 +131,7 @@ export class AuthService {
     if (!userId || isTokenInBlacklist || !isDeviceExist) {
       return null;
     }
-    await this.refreshTokenRepository.addTokenInBlacklist(refreshToken);
+    await this.refreshTokenBlackListRepo.addTokenInBlacklist(refreshToken);
     const newAccessToken = this.jwtService.createAccessJWTToken(userId);
     const newRefreshToken = this.jwtService.createRefreshJWTToken(
       userId,
@@ -153,13 +151,11 @@ export class AuthService {
   }
 
   async confirmUserEmail(confirmationCode: string): Promise<boolean> {
-    const user =
-      await this.usersRepository.findUserByEmailConfirmationCode(
-        confirmationCode,
-      );
-    if (user) {
-      await this.usersRepository.updateAccessUserEmailConfirmation(
-        user[0].userId,
+    const userEmailConfirmationInfo =
+      await this.usersRepo.findUserByEmailConfirmationCode(confirmationCode);
+    if (userEmailConfirmationInfo) {
+      await this.usersRepo.updateAccessUserEmailConfirmation(
+        userEmailConfirmationInfo.userId,
       );
       return true;
     }
@@ -167,22 +163,22 @@ export class AuthService {
   }
 
   async confirmUserEmailResending(email: string): Promise<boolean> {
-    const user = await this.usersRepository.findUserByLoginOrEmail(email);
-    if (user.length > 0) {
+    const user = await this.usersRepo.findUserByLoginOrEmail(email);
+    if (user) {
       const userEmailConfirmation = new UserEmailConfirmation();
       userEmailConfirmation.confirmationCode = randomUUID().toString();
       userEmailConfirmation.expirationDate = add(new Date(), {
         hours: 1,
         minutes: 1,
       }).toISOString();
-      const result = await this.usersRepository.updateUserEmailConfirmation(
-        user[0].id,
+      const result = await this.usersRepo.updateUserEmailConfirmation(
+        user.id,
         userEmailConfirmation,
       );
       if (result) {
         this.nodemailerService
           .sendRegistrationEmail(
-            user[0].email,
+            user.email,
             'User registration new code',
             userEmailConfirmation.confirmationCode,
           )
@@ -196,19 +192,17 @@ export class AuthService {
   }
 
   async passwordRecovery(email: string): Promise<boolean> {
-    const user = await this.usersRepository.findUserByLoginOrEmail(email);
-    if (user.length > 0) {
+    const user = await this.usersRepo.findUserByLoginOrEmail(email);
+    if (user) {
       const userPasswordRecovery = new UserPasswordRecovery();
-      userPasswordRecovery.userId = user[0].id;
+      userPasswordRecovery.userId = user.id;
       userPasswordRecovery.recoveryCode = randomUUID().toString();
       userPasswordRecovery.expirationDate = add(new Date(), {
         hours: 1,
         minutes: 1,
       }).toISOString();
-      const result = await this.usersRepository.passwordRecoveryConfirmation(
-        email,
-        userPasswordRecovery,
-      );
+      const result =
+        await this.usersRepo.passwordRecoveryConfirmation(userPasswordRecovery);
       if (result) {
         this.nodemailerService
           .sendPasswordRecoveryEmail(
@@ -230,11 +224,11 @@ export class AuthService {
     recoveryCode: string,
   ): Promise<boolean> {
     const user =
-      await this.usersRepository.findUserByPasswordRecoveryCode(recoveryCode);
-    if (user.length > 0) {
+      await this.usersRepo.findUserByPasswordRecoveryCode(recoveryCode);
+    if (user) {
       const newPasswordHash = await this.bcryptService.genHash(password);
-      await this.usersRepository.updatePasswordRecovery(
-        user[0].userId,
+      await this.usersRepo.updatePasswordRecovery(
+        user.userId!,
         newPasswordHash,
       );
       return true;

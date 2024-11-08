@@ -11,7 +11,6 @@ import {
   Response,
 } from '@nestjs/common';
 import { AuthService } from '../application/auth.service';
-import { UsersQueryRepository } from '../../users/infrastructure/sql/users.query.repository';
 import { BearerAuthGuard } from '../../../infrastructure/guards/bearer.auth.guard';
 import {
   AuthInputEmailConfirmationDto,
@@ -21,13 +20,13 @@ import {
   AuthInputNewPasswordDto,
   AuthInputRegistrationDto,
 } from './dto/input/auth.input.dto';
-import { ReqIpCounter } from '../../../infrastructure/guards/req-counter/req.ip.counter';
+import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersQueryRepo: UsersQueryRepo,
   ) {}
   //@UseGuards(ReqIpCounter)
   @Post('registration')
@@ -153,7 +152,7 @@ export class AuthController {
   async getUserInfo(@Request() req) {
     const userId = req.userId;
     if (userId) {
-      const user = await this.usersQueryRepository.findUserById(userId);
+      const user = await this.usersQueryRepo.findUserById(userId);
       return user;
     }
     throw new UnauthorizedException();

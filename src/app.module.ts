@@ -7,7 +7,15 @@ import { DeleteAllController } from './features/zTesting(dropDb)/delete.all';
 import { AuthModule } from './features/auth/auth.module';
 import { DeviceModule } from './features/securityDevices/device.module';
 import { HelloPageModule } from './base/hello.page/hello.page';
-import { loginOrEmailIsExist } from './infrastructure/decorators/auth.custom.decorator';
+import {
+  emailConfirmationCodeIsExist,
+  emailResendingIsEmailConfirmed,
+  loginOrEmailIsExist,
+  passwordRecoveryCodeIsExist,
+} from './infrastructure/decorators/auth.custom.decorator';
+import { JwtService } from './infrastructure/utils/services/jwt.service';
+import { BcryptService } from './infrastructure/utils/services/bcrypt.service';
+import { NodemailerService } from './infrastructure/utils/services/nodemailer.service';
 
 @Module({
   imports: [
@@ -25,10 +33,13 @@ import { loginOrEmailIsExist } from './infrastructure/decorators/auth.custom.dec
   ],
 
   providers: [
+    BcryptService,
+    NodemailerService,
+    JwtService,
     loginOrEmailIsExist,
-    /*passwordRecoveryCodeIsExist,
+    passwordRecoveryCodeIsExist,
     emailConfirmationCodeIsExist,
-    emailResendingIsEmailConfirmed,*/
+    emailResendingIsEmailConfirmed,
   ],
 
   controllers: [DeleteAllController],

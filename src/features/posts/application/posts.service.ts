@@ -6,15 +6,15 @@ import { BlogsQueryRepository } from '../../blogs/infrastructure/sql/blogs.query
 import { Post } from '../domain/post.entity';
 import { LikeStatus } from '../../../base/types/like.statuses';
 import { PostUserLikeStatus } from '../domain/post.like.entity';
-import { UsersQueryRepository } from '../../users/infrastructure/sql/users.query.repository';
 import { PostsLikeInfoRepository } from '../infrastructure/sql/posts.like.info.repository';
+import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly postsRepository: PostsRepository,
     private readonly blogsQueryRepository: BlogsQueryRepository,
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersQueryRepo: UsersQueryRepo,
     private readonly postsLikeInfoRepository: PostsLikeInfoRepository,
   ) {}
   async updatePost(
@@ -69,7 +69,7 @@ export class PostsService {
       postId,
       userId,
     );
-    const user = await this.usersQueryRepository.findUserById(userId);
+    const user = await this.usersQueryRepo.findUserById(userId);
     if (!postLikesInfo[0]?.status) {
       const newPostLikeInfo = new PostUserLikeStatus();
       newPostLikeInfo.postId = postId;

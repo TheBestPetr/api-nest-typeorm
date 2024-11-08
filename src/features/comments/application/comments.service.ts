@@ -2,19 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { CommentsRepository } from '../infrastructure/sql/comments.repository';
 import { CommentInputDto } from '../api/dto/input/comment.input.dto';
 import { CommentOutputDto } from '../api/dto/output/comment.output.dto';
-import { UsersQueryRepository } from '../../users/infrastructure/sql/users.query.repository';
 import { Comment, CommentatorInfo } from '../domain/comment.entity';
 import { CommentsQueryRepository } from '../infrastructure/sql/comments.query.repository';
 import { LikeStatus } from '../../../base/types/like.statuses';
 import { CommentsLikeInfoRepository } from '../infrastructure/sql/comments.like.info.repository';
 import { CommentUserLikeStatus } from '../domain/comment.like.entity';
+import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
 
 @Injectable()
 export class CommentsService {
   constructor(
     private readonly commentsRepository: CommentsRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly usersQueryRepo: UsersQueryRepo,
     private readonly commentLikeInfoRepository: CommentsLikeInfoRepository,
   ) {}
 
@@ -23,15 +23,15 @@ export class CommentsService {
     commentatorId: string,
     postId: string,
   ): Promise<CommentOutputDto> {
-    const user = await this.usersQueryRepository.findUserById(commentatorId);
+    const user = await this.usersQueryRepo.findUserById(commentatorId);
 
     const newComment = new Comment();
     newComment.postId = postId;
     newComment.content = input.content;
 
     const commentatorInfo = new CommentatorInfo();
-    commentatorInfo.userId = user.userId;
-    commentatorInfo.userLogin = user.login;
+    commentatorInfo.userId = user!.userId;
+    commentatorInfo.userLogin = user!.login;
 
     const insertedComment = await this.commentsRepository.createComment(
       newComment,
@@ -80,11 +80,10 @@ export class CommentsService {
         commentId,
         userId,
       );
-    const user = await this.usersQueryRepository.findUserById(userId);
     if (!commentLikeInfo[0]?.status) {
       const newCommentLikeInfo = new CommentUserLikeStatus();
       newCommentLikeInfo.commentId = commentId;
-      newCommentLikeInfo.userId = user.userId;
+      newCommentLikeInfo.userId = userId;
       newCommentLikeInfo.status = inputLikeStatus;
       const createLikeInfo =
         await this.commentLikeInfoRepository.createNewLikeInfo(

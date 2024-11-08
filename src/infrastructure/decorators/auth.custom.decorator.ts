@@ -4,7 +4,6 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { UsersRepository } from '../../features/users/infrastructure/sql/users.repository';
 import { UsersRepo } from '../../features/users/infrastructure/typeorm/users.repo';
 
 @ValidatorConstraint({ name: 'passwordRecoveryCodeIsExist', async: true })
@@ -12,7 +11,7 @@ import { UsersRepo } from '../../features/users/infrastructure/typeorm/users.rep
 export class passwordRecoveryCodeIsExist
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepo: UsersRepo) {}
 
   async validate(recoveryCode: string) {
     if (!isUUID(recoveryCode)) {
@@ -21,7 +20,7 @@ export class passwordRecoveryCodeIsExist
       ]);
     }
     const userPasswordRecovery =
-      await this.usersRepository.findUserByPasswordRecoveryCode(recoveryCode);
+      await this.usersRepo.findUserByPasswordRecoveryCode(recoveryCode);
     if (
       !userPasswordRecovery ||
       userPasswordRecovery.expirationDate! < new Date().toISOString()
@@ -55,7 +54,7 @@ export class loginOrEmailIsExist implements ValidatorConstraintInterface {
 export class emailConfirmationCodeIsExist
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepo: UsersRepo) {}
 
   async validate(confirmationCode: string) {
     if (!isUUID(confirmationCode)) {
@@ -64,9 +63,7 @@ export class emailConfirmationCodeIsExist
       ]);
     }
     const userEmailConfirmation =
-      await this.usersRepository.findUserByEmailConfirmationCode(
-        confirmationCode,
-      );
+      await this.usersRepo.findUserByEmailConfirmationCode(confirmationCode);
     if (
       !userEmailConfirmation ||
       userEmailConfirmation.expirationDate! < new Date().toISOString() ||
@@ -83,17 +80,17 @@ export class emailConfirmationCodeIsExist
 export class emailResendingIsEmailConfirmed
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepo: UsersRepo) {}
 
   async validate(email: string) {
     const userEmailConfirmationInfo =
-      await this.usersRepository.findUserEmailConfirmationInfo(email);
+      await this.usersRepo.findUserEmailConfirmationInfo(email);
     if (!userEmailConfirmationInfo) {
       throw new BadRequestException([
         { message: 'User does not exist', field: 'email' },
       ]);
     }
-    if (userEmailConfirmationInfo[0].isConfirmed === true) {
+    if (userEmailConfirmationInfo.isConfirmed) {
       throw new BadRequestException([
         { message: 'Email is already confirmed', field: 'email' },
       ]);
