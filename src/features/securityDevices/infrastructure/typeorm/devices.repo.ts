@@ -25,11 +25,16 @@ export class DevicesRepo {
     newIat: string,
     newExp: string,
   ): Promise<boolean> {
-    const result = await this.devicesRepo.update(
-      { deviceId: deviceId, iat: oldIat },
-      { iat: newIat, exp: newExp },
-    );
-    return !!result;
+    const device = await this.devicesRepo.findOneBy([
+      { deviceId: deviceId },
+      { iat: oldIat },
+    ]);
+    if (device) {
+      device.iat = newIat;
+      device.exp = newExp;
+      await this.devicesRepo.save(device);
+    }
+    return !!device;
   }
 
   async findSessionByDeviceId(deviceId: string): Promise<string | null> {

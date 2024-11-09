@@ -4,9 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   OneToMany,
-  JoinColumn,
 } from 'typeorm';
 import { Post } from '../../posts/domain/post.entity';
+import { BlogInputDto } from '../api/dto/input/blog.input.dto';
 
 @Entity()
 export class Blog {
@@ -28,7 +28,15 @@ export class Blog {
   @Column({ type: 'boolean' })
   isMembership: boolean;
 
+  static create(dto: BlogInputDto) {
+    const blog = new Blog();
+    blog.name = dto.name;
+    blog.description = dto.description;
+    blog.websiteUrl = dto.websiteUrl;
+    blog.isMembership = false;
+    return blog;
+  }
+
   @OneToMany(() => Post, (post) => post.blog)
-  @JoinColumn()
   posts: Post[];
 }

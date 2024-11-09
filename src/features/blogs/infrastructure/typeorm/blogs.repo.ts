@@ -17,19 +17,18 @@ export class BlogsRepo {
   }
 
   async updateBlog(blogId: string, input: BlogInputDto): Promise<boolean> {
-    const updatedBlog = await this.blogsRepo.update(
-      { id: blogId },
-      {
-        name: input.name,
-        description: input.description,
-        websiteUrl: input.websiteUrl,
-      },
-    );
-    return !!updatedBlog;
+    const blog = await this.blogsRepo.findOneBy({ id: blogId });
+    if (blog) {
+      blog.name = input.name;
+      blog.description = input.description;
+      blog.websiteUrl = input.websiteUrl;
+      await this.blogsRepo.save(blog);
+    }
+    return !!blog;
   }
 
   async deleteBlog(blogId: string): Promise<boolean> {
-    const isPostDeleted = await this.blogsRepo.delete({ id: blogId });
-    return isPostDeleted.affected === 1;
+    const isBlogDeleted = await this.blogsRepo.delete({ id: blogId });
+    return isBlogDeleted.affected === 1;
   }
 }

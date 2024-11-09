@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryColumn,
@@ -28,11 +27,9 @@ export class PostUserLikeStatus {
   createdAt: string;
 
   @ManyToOne(() => Post, (post) => post.likeStatuses)
-  @JoinColumn()
   post: Post;
 
   @ManyToOne(() => User, (user) => user.userPostsLikes)
-  @JoinColumn()
   user: User;
 }
 
@@ -48,6 +45,5 @@ export class PostLikesCountInfo {
   dislikesCount: number;
 
   @OneToOne(() => Post, (post) => post.id)
-  @JoinColumn()
   post: Post;
 }

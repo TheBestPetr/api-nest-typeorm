@@ -2,23 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SETTINGS } from './settings/app.settings';
 import * as process from 'process';
-import { UserModule } from './features/users/user.module';
 import { DeleteAllController } from './features/zTesting(dropDb)/delete.all';
-import { AuthModule } from './features/auth/auth.module';
-import { DeviceModule } from './features/securityDevices/device.module';
 import { HelloPageModule } from './base/hello.page/hello.page';
-import {
-  emailConfirmationCodeIsExist,
-  emailIsExist,
-  emailResendingIsEmailConfirmed,
-  loginIsExist,
-  passwordRecoveryCodeIsExist,
-} from './infrastructure/decorators/auth.custom.decorator';
 import { JwtService } from './infrastructure/utils/services/jwt.service';
 import { BcryptService } from './infrastructure/utils/services/bcrypt.service';
 import { NodemailerService } from './infrastructure/utils/services/nodemailer.service';
-import { PostModule } from './features/posts/post.module';
-import { BlogModule } from './features/blogs/blog.module';
+import { AllModules } from './settings/modules';
 
 @Module({
   imports: [
@@ -27,25 +16,11 @@ import { BlogModule } from './features/blogs/blog.module';
       ? SETTINGS.DB_CONNECTION.CONNECT_TO_NEON_DB
       : SETTINGS.DB_CONNECTION.CONNECT_TO_TEST_DB,
     SETTINGS.REQ_COUNTER,
-    UserModule,
-    AuthModule,
-    DeviceModule,
-    BlogModule,
-    PostModule,
-    //CommentModule,
+    AllModules,
     HelloPageModule,
   ],
 
-  providers: [
-    BcryptService,
-    NodemailerService,
-    JwtService,
-    loginIsExist,
-    emailIsExist,
-    passwordRecoveryCodeIsExist,
-    emailConfirmationCodeIsExist,
-    emailResendingIsEmailConfirmed,
-  ],
+  providers: [BcryptService, NodemailerService, JwtService],
 
   controllers: [DeleteAllController],
 })

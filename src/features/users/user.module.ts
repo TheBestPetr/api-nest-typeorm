@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
@@ -24,3 +25,4 @@ import { UsersQueryRepo } from './infrastructure/typeorm/users.query.repo';
   exports: [UsersRepo, UsersQueryRepo],
 })
 export class UserModule {}
+*/

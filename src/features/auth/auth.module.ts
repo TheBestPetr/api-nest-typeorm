@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenBlackList } from './domain/refresh.token.entity';
@@ -27,3 +28,4 @@ import { DeviceModule } from '../securityDevices/device.module';
   exports: [RefreshTokenBlackListRepo],
 })
 export class AuthModule {}
+*/

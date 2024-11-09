@@ -7,13 +7,9 @@ import { BlogsRepo } from '../infrastructure/typeorm/blogs.repo';
 @Injectable()
 export class BlogsService {
   constructor(private readonly blogsRepo: BlogsRepo) {}
+
   async createBlog(input: BlogInputDto): Promise<BlogOutputDto | null> {
-    const blog = new Blog();
-    blog.name = input.name;
-    blog.description = input.description;
-    blog.websiteUrl = input.websiteUrl;
-    blog.isMembership = false;
-    blog.createdAt = new Date().toISOString();
+    const blog = Blog.create(input);
     const insertedBlog = await this.blogsRepo.createBlog(blog);
     return insertedBlog
       ? {

@@ -1,9 +1,8 @@
+/*
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './domain/post.entity';
 import { PostsService } from './application/posts.service';
-import { PostsRepository } from './infrastructure/sql/posts.repository';
-import { PostsQueryRepository } from './infrastructure/sql/posts.query.repository';
 import { PostsController } from './api/posts.controller';
 import { CommentsService } from '../comments/application/comments.service';
 import { CommentsRepository } from '../comments/infrastructure/sql/comments.repository';
@@ -17,18 +16,22 @@ import {
 } from './domain/post.like.entity';
 import { UserModule } from '../users/user.module';
 import { BlogModule } from '../blogs/blog.module';
+import { PostsRepo } from './infrastructure/typeorm/posts.repo';
+import { PostsQueryRepo } from './infrastructure/typeorm/posts.query.repo';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Post, PostUserLikeStatus, PostLikesCountInfo]),
+    TypeOrmModule.forFeature([
+      Post /!*, PostUserLikeStatus, PostLikesCountInfo*!/,
+    ]),
     UserModule,
-    BlogModule,
+    //BlogModule,
   ],
   controllers: [PostsController],
   providers: [
     PostsService,
-    PostsRepository,
-    PostsQueryRepository,
+    PostsRepo,
+    PostsQueryRepo,
     CommentsService,
     CommentsRepository,
     CommentsQueryRepository,
@@ -36,6 +39,7 @@ import { BlogModule } from '../blogs/blog.module';
     PostsLikeInfoRepository,
     JwtService,
   ],
-  exports: [PostsService, PostsQueryRepository, PostsRepository],
+  exports: [PostsService, PostsQueryRepo, PostsRepo],
 })
 export class PostModule {}
+*/

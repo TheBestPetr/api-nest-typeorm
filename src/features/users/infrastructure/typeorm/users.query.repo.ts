@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../domain/user.entity';
-import { ILike, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserInputQueryDto } from '../../api/dto/input/user.input.dto';
 import { UserOutputQueryDto } from '../../api/dto/output/user.output.dto';
 import { AuthIOutputDto } from '../../../auth/api/dto/output/auth.output.dto';
@@ -16,10 +16,7 @@ export class UsersQueryRepo {
     const searchWithEmail = query.searchEmailTerm ?? '';
     const searchWithLogin = query.searchLoginTerm ?? '';
     const [items, count] = await this.usersQueryRepo.findAndCount({
-      where: [
-        { email: ILike(`%${searchWithEmail}%`) },
-        { login: ILike(`%${searchWithLogin}%`) },
-      ],
+      where: [{ email: searchWithEmail }, { login: searchWithLogin }],
       order: { [query.sortBy]: query.sortDirection },
       take: query.pageSize,
       skip: (query.pageNumber - 1) * query.pageSize, // todo something

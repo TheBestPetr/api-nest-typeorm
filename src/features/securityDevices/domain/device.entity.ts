@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from '../../users/domain/user.entity';
 
 @Entity()
@@ -22,6 +22,5 @@ export class Device {
   exp: string;
 
   @ManyToOne(() => User, (user) => user.devices)
-  @JoinColumn()
   user: User;
 }

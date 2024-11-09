@@ -16,10 +16,10 @@ import {
 } from '../../../infrastructure/utils/query.mappers';
 import { PostInputQueryDto } from '../../posts/api/dto/input/post.input.dto';
 import { PostsService } from '../../posts/application/posts.service';
-import { PostsQueryRepository } from '../../posts/infrastructure/sql/posts.query.repository';
 import { isUUID } from 'class-validator';
 import { BearerAuthWithout401 } from '../../../infrastructure/decorators/bearer.auth.without.401';
 import { BlogsQueryRepo } from '../infrastructure/typeorm/blogs.query.repo';
+import { PostsQueryRepo } from '../../posts/infrastructure/typeorm/posts.query.repo';
 
 @Controller('blogs')
 export class BlogsController {
@@ -27,7 +27,7 @@ export class BlogsController {
     private readonly blogsService: BlogsService,
     private readonly blogsQueryRepo: BlogsQueryRepo,
     private readonly postsService: PostsService,
-    private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly postsQueryRepo: PostsQueryRepo,
   ) {}
 
   @Get()
@@ -67,12 +67,11 @@ export class BlogsController {
       throw new NotFoundException();
     }
     const query = sortNPagingPostQuery(inputQuery);
-    const foundPosts =
-      await this.postsQueryRepository.findPostsByBlogIdInParams(
-        query,
-        blogId,
-        req.userId,
-      );
+    const foundPosts = await this.postsQueryRepo.findPostsByBlogIdInParams(
+      query,
+      blogId,
+      //req.userId,
+    );
     if (!foundPosts) {
       throw new NotFoundException();
     }

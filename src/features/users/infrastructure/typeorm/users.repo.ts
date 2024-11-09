@@ -65,25 +65,31 @@ export class UsersRepo {
   }
 
   async updateAccessUserEmailConfirmation(id: string): Promise<boolean> {
-    const result = await this.userEmailConfirmationRepo.update(
-      { userId: id },
-      { confirmationCode: null, expirationDate: null, isConfirmed: true },
-    );
-    return result.affected === 1;
+    const emailConfirmation = await this.userEmailConfirmationRepo.findOneBy({
+      userId: id,
+    });
+    if (emailConfirmation) {
+      emailConfirmation.confirmationCode = null;
+      emailConfirmation.expirationDate = null;
+      emailConfirmation.isConfirmed = true;
+      await this.userEmailConfirmationRepo.save(emailConfirmation);
+    }
+    return !!emailConfirmation;
   }
 
   async updateUserEmailConfirmation(
     userId: string,
-    inputEmailConfirmation: UserEmailConfirmation,
+    input: UserEmailConfirmation,
   ): Promise<boolean> {
-    const result = await this.userEmailConfirmationRepo.update(
-      { userId: userId },
-      {
-        confirmationCode: inputEmailConfirmation.confirmationCode,
-        expirationDate: inputEmailConfirmation.expirationDate,
-      },
-    );
-    return result.affected === 1;
+    const emailConfirmation = await this.userEmailConfirmationRepo.findOneBy({
+      userId: userId,
+    });
+    if (emailConfirmation) {
+      emailConfirmation.confirmationCode = input.confirmationCode;
+      emailConfirmation.expirationDate = input.expirationDate;
+      await this.userEmailConfirmationRepo.save(emailConfirmation);
+    }
+    return !!emailConfirmation;
   }
 
   async findUserByPasswordRecoveryCode(
@@ -100,15 +106,13 @@ export class UsersRepo {
     userId: string,
     newPasswordHash: string,
   ): Promise<boolean> {
-    const isPasswordHashUpdated = await this.usersRepo.update(
-      { id: userId },
-      { passwordHash: newPasswordHash },
-    );
+    const user = await this.usersRepo.findOneBy({ id: userId });
+    if (user) {
+      user.passwordHash = newPasswordHash;
+      await this.usersRepo.save(user);
+    }
     const isPasswordRecoveryUpdated =
       await this.userPasswordRecoveryRepo.delete({ userId: userId });
-    return (
-      isPasswordHashUpdated.affected === 1 ||
-      isPasswordRecoveryUpdated.affected === 1
-    );
+    return isPasswordRecoveryUpdated.affected === 1;
   }
 }

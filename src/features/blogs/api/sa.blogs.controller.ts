@@ -25,8 +25,8 @@ import {
   PostInputQueryDto,
 } from '../../posts/api/dto/input/post.input.dto';
 import { PostsService } from '../../posts/application/posts.service';
-import { PostsQueryRepository } from '../../posts/infrastructure/sql/posts.query.repository';
 import { BlogsQueryRepo } from '../infrastructure/typeorm/blogs.query.repo';
+import { PostsQueryRepo } from '../../posts/infrastructure/typeorm/posts.query.repo';
 
 @Controller('sa/blogs')
 @UseGuards(BasicAuthGuard)
@@ -35,7 +35,7 @@ export class SaBlogsController {
     private readonly blogsQueryRepo: BlogsQueryRepo,
     private readonly blogsService: BlogsService,
     private readonly postsService: PostsService,
-    private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly postsQueryRepo: PostsQueryRepo,
   ) {}
 
   @Get()
@@ -128,12 +128,11 @@ export class SaBlogsController {
       throw new NotFoundException();
     }
     const query = sortNPagingPostQuery(inputQuery);
-    const foundPosts =
-      await this.postsQueryRepository.findPostsByBlogIdInParams(
-        query,
-        blogId,
-        //req.userId,
-      );
+    const foundPosts = await this.postsQueryRepo.findPostsByBlogIdInParams(
+      query,
+      blogId,
+      //req.userId,
+    );
     if (!foundPosts) {
       throw new NotFoundException();
     }
@@ -151,7 +150,7 @@ export class SaBlogsController {
       throw new NotFoundException();
     }
     const isBlogExist = await this.blogsQueryRepo.findBlogById(blogId);
-    const isPostExist = await this.postsQueryRepository.findPostById(postId);
+    const isPostExist = await this.postsQueryRepo.findPostById(postId);
     if (!isBlogExist || !isPostExist) {
       throw new NotFoundException();
     }
@@ -175,7 +174,7 @@ export class SaBlogsController {
       throw new NotFoundException();
     }
     const isBlogExist = await this.blogsQueryRepo.findBlogById(blogId);
-    const isPostExist = await this.postsQueryRepository.findPostById(postId);
+    const isPostExist = await this.postsQueryRepo.findPostById(postId);
     if (!isBlogExist || !isPostExist) {
       throw new NotFoundException();
     }

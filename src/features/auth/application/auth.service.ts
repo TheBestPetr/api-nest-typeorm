@@ -47,27 +47,16 @@ export class AuthService {
 
   async userRegistration(input: UserInputDto): Promise<boolean> {
     const passwordHash = await this.bcryptService.genHash(input.password);
-    const expDate = add(new Date(), {
-      hours: 1,
-      minutes: 2,
-    }).toISOString();
-    const createdUser = new User();
-    createdUser.login = input.login;
-    createdUser.passwordHash = passwordHash;
-    createdUser.email = input.email;
 
-    const userEmailConfirmation = new UserEmailConfirmation();
-    userEmailConfirmation.confirmationCode = randomUUID().toString();
-    userEmailConfirmation.expirationDate = expDate;
-    userEmailConfirmation.isConfirmed = false;
-
-    await this.usersRepo.createUser(createdUser, userEmailConfirmation);
+    const user = User.create(passwordHash, input);
+    const userEmailConfirmation = UserEmailConfirmation.create();
+    await this.usersRepo.createUser(user, userEmailConfirmation);
 
     this.nodemailerService
       .sendRegistrationEmail(
-        createdUser.email,
+        user.email,
         'User registration code',
-        userEmailConfirmation.confirmationCode,
+        userEmailConfirmation.confirmationCode!,
       )
       .catch((error) => {
         console.error('Send email error', error);
@@ -87,6 +76,7 @@ export class AuthService {
       newDeviceId,
     );
     const iatNExp = await this.jwtService.getTokenIatNExp(refreshToken);
+
     const device = new Device();
     device.userId = userId;
     device.deviceId = newDeviceId;

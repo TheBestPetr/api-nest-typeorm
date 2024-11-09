@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
+import { Blog } from '../../../domain/blog.entity';
 
 export class BlogInputDto {
   @IsString()
@@ -23,8 +24,8 @@ export class BlogInputDto {
 
 export class BlogInputQueryDto {
   searchNameTerm: string | null;
-  sortBy: string;
-  sortDirection: 1 | -1 | 'asc' | 'desc' | 'ascending' | 'descending';
+  sortBy: keyof Blog;
+  sortDirection: 1 | -1 | 'asc' | 'desc';
   pageNumber: number;
   pageSize: number;
 }

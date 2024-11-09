@@ -2,13 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Blog } from '../../blogs/domain/blog.entity';
 import { PostUserLikeStatus } from './post.like.entity';
+import { PostInputBlogDto } from '../api/dto/input/post.input.dto';
 
 @Entity()
 export class Post {
@@ -33,15 +33,22 @@ export class Post {
   @CreateDateColumn({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 
+  static create(dto: PostInputBlogDto, blogId: string, blogName: string) {
+    const post = new Post();
+    post.title = dto.title;
+    post.shortDescription = dto.shortDescription;
+    post.content = dto.content;
+    post.blogId = blogId;
+    post.blogName = blogName;
+    return post;
+  }
+
   @ManyToOne(() => Blog, (blog) => blog.posts)
-  @JoinColumn()
   blog: Blog;
 
   /*@OneToMany(() => Comment, (comment) => comment.post)
-  @JoinColumn()
   comments: Comment[];*/
 
   @OneToMany(() => PostUserLikeStatus, (user) => user.post)
-  @JoinColumn()
   likeStatuses: PostUserLikeStatus[];
 }

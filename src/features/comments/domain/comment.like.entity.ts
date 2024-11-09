@@ -23,11 +23,9 @@ export class CommentUserLikeStatus {
   createdAt: string;
 
   /*@ManyToOne(() => Comment, (comment) => comment.likeStatuses)
-  @JoinColumn()
   comment: Comment;*/
 
   //@ManyToOne(() => User, (user) => user.userCommentLikes)
-  // @JoinColumn()
   //user: User;
 }
 

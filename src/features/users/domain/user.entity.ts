@@ -10,6 +10,9 @@ import {
 } from 'typeorm';
 import { Device } from '../../securityDevices/domain/device.entity';
 import { PostUserLikeStatus } from '../../posts/domain/post.like.entity';
+import { UserInputDto } from '../api/dto/input/user.input.dto';
+import { randomUUID } from 'node:crypto';
+import { add } from 'date-fns';
 
 @Entity()
 export class User {
@@ -28,16 +31,21 @@ export class User {
   @CreateDateColumn({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 
+  static create(passwordHash: string, dto: UserInputDto) {
+    const user = new User();
+    user.login = dto.login;
+    user.email = dto.email;
+    user.passwordHash = passwordHash;
+    return user;
+  }
+
   @OneToMany(() => Device, (device) => device.user)
-  @JoinColumn()
   devices: Device[];
 
   @OneToMany(() => PostUserLikeStatus, (postLikes) => postLikes.user)
-  @JoinColumn()
   userPostsLikes: PostUserLikeStatus;
 
   //@OneToMany(() => CommentUserLikeStatus, (commentLikes) => commentLikes.user)
-  //@JoinColumn()
   // userCommentLikes: CommentUserLikeStatus[];
 }
 
@@ -54,6 +62,18 @@ export class UserEmailConfirmation {
 
   @Column({ type: 'boolean', default: false })
   isConfirmed: boolean;
+
+  static create() {
+    const expDate = add(new Date(), {
+      hours: 1,
+      minutes: 2,
+    }).toISOString();
+    const userEmailConfirmation = new UserEmailConfirmation();
+    userEmailConfirmation.confirmationCode = randomUUID().toString();
+    userEmailConfirmation.expirationDate = expDate;
+    userEmailConfirmation.isConfirmed = false;
+    return userEmailConfirmation;
+  }
 
   @OneToOne(() => User, (user) => user.id)
   @JoinColumn()

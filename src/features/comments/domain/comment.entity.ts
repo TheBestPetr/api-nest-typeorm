@@ -15,11 +15,9 @@ export class Comment {
   createdAt: string;
 
   /*@ManyToOne(() => Post, (post) => post.comments)
-  @JoinColumn()
   post: Post;*/
 
   /*@OneToMany(() => CommentUserLikeStatus, (user) => user.comment)
-  @JoinColumn()
   likeStatuses: CommentUserLikeStatus[];*/
 }
 
@@ -35,10 +33,8 @@ export class CommentatorInfo {
   userLogin: string;
 
   /*@OneToOne(() => Comment, (comment) => comment.id)
-  @JoinColumn()
   comment: Comment;*/
 
   /*@ManyToOne(() => User, (user) => user.id)
-  @JoinColumn()
   user: User;*/
 }

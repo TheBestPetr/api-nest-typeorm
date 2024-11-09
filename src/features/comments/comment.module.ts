@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Comment, CommentatorInfo } from './domain/comment.entity';
@@ -26,3 +27,4 @@ import { UsersQueryRepo } from '../users/infrastructure/typeorm/users.query.repo
   exports: [CommentsService, CommentsRepository],
 })
 export class CommentModule {}
+*/

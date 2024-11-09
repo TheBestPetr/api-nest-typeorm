@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PostsRepository } from '../infrastructure/sql/posts.repository';
 import { PostInputBlogDto } from '../api/dto/input/post.input.dto';
 import { PostOutputDto } from '../api/dto/output/post.output.dto';
 import { Post } from '../domain/post.entity';
@@ -8,11 +7,12 @@ import { PostUserLikeStatus } from '../domain/post.like.entity';
 import { PostsLikeInfoRepository } from '../infrastructure/sql/posts.like.info.repository';
 import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
 import { BlogsQueryRepo } from '../../blogs/infrastructure/typeorm/blogs.query.repo';
+import { PostsRepo } from '../infrastructure/typeorm/posts.repo';
 
 @Injectable()
 export class PostsService {
   constructor(
-    private readonly postsRepository: PostsRepository,
+    private readonly postsRepo: PostsRepo,
     private readonly blogsQueryRepo: BlogsQueryRepo,
     private readonly usersQueryRepo: UsersQueryRepo,
     private readonly postsLikeInfoRepository: PostsLikeInfoRepository,
@@ -22,42 +22,39 @@ export class PostsService {
     postId: string,
     input: PostInputBlogDto,
   ): Promise<boolean> {
-    return this.postsRepository.updatePost(blogId, postId, input);
+    return this.postsRepo.updatePost(blogId, postId, input);
   }
 
   async deletePost(blogId: string, postId: string): Promise<boolean> {
-    return this.postsRepository.deletePost(blogId, postId);
+    return this.postsRepo.deletePost(blogId, postId);
   }
 
   async createPost(
     blogId: string,
     input: PostInputBlogDto,
-  ): Promise<PostOutputDto> {
+  ): Promise<PostOutputDto | null> {
     const blog = await this.blogsQueryRepo.findBlogById(blogId);
-    const createdPost = new Post();
-    createdPost.title = input.title;
-    createdPost.shortDescription = input.shortDescription;
-    createdPost.content = input.content;
-    createdPost.blogId = blog!.id;
-    createdPost.blogName = blog!.name;
+    const post = Post.create(input, blog!.id, blog!.name);
 
-    const insertedPost = await this.postsRepository.createPost(createdPost);
+    const insertedPost = await this.postsRepo.createPost(post);
 
-    return {
-      id: insertedPost[0].id,
-      title: insertedPost[0].title,
-      shortDescription: insertedPost[0].shortDescription,
-      content: insertedPost[0].content,
-      blogId: insertedPost[0].blogId,
-      blogName: insertedPost[0].blogName,
-      createdAt: insertedPost[0].createdAt,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-        newestLikes: [],
-      },
-    };
+    return insertedPost
+      ? {
+          id: insertedPost.id,
+          title: insertedPost.title,
+          shortDescription: insertedPost.shortDescription,
+          content: insertedPost.content,
+          blogId: insertedPost.blogId,
+          blogName: insertedPost.blogName,
+          createdAt: insertedPost.createdAt,
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: 'None',
+            newestLikes: [],
+          },
+        }
+      : null;
   }
 
   async updateLikeStatus(
