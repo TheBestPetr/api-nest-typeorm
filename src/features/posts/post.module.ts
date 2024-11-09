@@ -4,7 +4,6 @@ import { Post } from './domain/post.entity';
 import { PostsService } from './application/posts.service';
 import { PostsRepository } from './infrastructure/sql/posts.repository';
 import { PostsQueryRepository } from './infrastructure/sql/posts.query.repository';
-import { BlogsQueryRepository } from '../blogs/infrastructure/sql/blogs.query.repository';
 import { PostsController } from './api/posts.controller';
 import { CommentsService } from '../comments/application/comments.service';
 import { CommentsRepository } from '../comments/infrastructure/sql/comments.repository';
@@ -17,18 +16,19 @@ import {
   PostUserLikeStatus,
 } from './domain/post.like.entity';
 import { UserModule } from '../users/user.module';
+import { BlogModule } from '../blogs/blog.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Post, PostUserLikeStatus, PostLikesCountInfo]),
     UserModule,
+    BlogModule,
   ],
   controllers: [PostsController],
   providers: [
     PostsService,
     PostsRepository,
     PostsQueryRepository,
-    BlogsQueryRepository,
     CommentsService,
     CommentsRepository,
     CommentsQueryRepository,

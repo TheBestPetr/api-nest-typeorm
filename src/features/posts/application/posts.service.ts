@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { PostsRepository } from '../infrastructure/sql/posts.repository';
 import { PostInputBlogDto } from '../api/dto/input/post.input.dto';
 import { PostOutputDto } from '../api/dto/output/post.output.dto';
-import { BlogsQueryRepository } from '../../blogs/infrastructure/sql/blogs.query.repository';
 import { Post } from '../domain/post.entity';
 import { LikeStatus } from '../../../base/types/like.statuses';
 import { PostUserLikeStatus } from '../domain/post.like.entity';
 import { PostsLikeInfoRepository } from '../infrastructure/sql/posts.like.info.repository';
 import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
+import { BlogsQueryRepo } from '../../blogs/infrastructure/typeorm/blogs.query.repo';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly postsRepository: PostsRepository,
-    private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly blogsQueryRepo: BlogsQueryRepo,
     private readonly usersQueryRepo: UsersQueryRepo,
     private readonly postsLikeInfoRepository: PostsLikeInfoRepository,
   ) {}
@@ -33,7 +33,7 @@ export class PostsService {
     blogId: string,
     input: PostInputBlogDto,
   ): Promise<PostOutputDto> {
-    const blog = await this.blogsQueryRepository.findBlogById(blogId);
+    const blog = await this.blogsQueryRepo.findBlogById(blogId);
     const createdPost = new Post();
     createdPost.title = input.title;
     createdPost.shortDescription = input.shortDescription;

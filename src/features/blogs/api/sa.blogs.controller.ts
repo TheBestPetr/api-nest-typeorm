@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotAcceptableException,
   NotFoundException,
   Param,
   Post,
@@ -16,7 +17,6 @@ import {
   sortNPagingBlogQuery,
   sortNPagingPostQuery,
 } from '../../../infrastructure/utils/query.mappers';
-import { BlogsQueryRepository } from '../infrastructure/sql/blogs.query.repository';
 import { BasicAuthGuard } from '../../../infrastructure/guards/basic.auth.guard';
 import { BlogsService } from '../application/blogs.service';
 import { isUUID } from 'class-validator';
@@ -26,12 +26,13 @@ import {
 } from '../../posts/api/dto/input/post.input.dto';
 import { PostsService } from '../../posts/application/posts.service';
 import { PostsQueryRepository } from '../../posts/infrastructure/sql/posts.query.repository';
+import { BlogsQueryRepo } from '../infrastructure/typeorm/blogs.query.repo';
 
 @Controller('sa/blogs')
 @UseGuards(BasicAuthGuard)
 export class SaBlogsController {
   constructor(
-    private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly blogsQueryRepo: BlogsQueryRepo,
     private readonly blogsService: BlogsService,
     private readonly postsService: PostsService,
     private readonly postsQueryRepository: PostsQueryRepository,
@@ -41,7 +42,7 @@ export class SaBlogsController {
   @HttpCode(200)
   async findBlogs(@Query() inputQuery: BlogInputQueryDto) {
     const query = sortNPagingBlogQuery(inputQuery);
-    const blogs = await this.blogsQueryRepository.findBlogs(query);
+    const blogs = await this.blogsQueryRepo.findBlogs(query);
     return blogs;
   }
 
@@ -49,7 +50,10 @@ export class SaBlogsController {
   @HttpCode(201)
   async createBlog(@Body() blogInputDto: BlogInputDto) {
     const newBlog = await this.blogsService.createBlog(blogInputDto);
-    return newBlog;
+    if (newBlog) {
+      return newBlog;
+    }
+    throw new NotAcceptableException();
   }
 
   @Put('/:blogId')
@@ -61,7 +65,7 @@ export class SaBlogsController {
     if (!isUUID(blogId)) {
       throw new NotFoundException();
     }
-    const isBlogExist = await this.blogsQueryRepository.findBlogById(blogId);
+    const isBlogExist = await this.blogsQueryRepo.findBlogById(blogId);
     if (!isBlogExist) {
       throw new NotFoundException();
     }
@@ -95,7 +99,7 @@ export class SaBlogsController {
     if (!isUUID(blogId)) {
       throw new NotFoundException();
     }
-    const isBlogExist = await this.blogsQueryRepository.findBlogById(blogId);
+    const isBlogExist = await this.blogsQueryRepo.findBlogById(blogId);
     if (!isBlogExist) {
       throw new NotFoundException();
     }
@@ -119,7 +123,7 @@ export class SaBlogsController {
     if (!isUUID(blogId)) {
       throw new NotFoundException();
     }
-    const isBlogExist = await this.blogsQueryRepository.findBlogById(blogId);
+    const isBlogExist = await this.blogsQueryRepo.findBlogById(blogId);
     if (!isBlogExist) {
       throw new NotFoundException();
     }
@@ -146,7 +150,7 @@ export class SaBlogsController {
     if (!isUUID(blogId) || !isUUID(postId)) {
       throw new NotFoundException();
     }
-    const isBlogExist = await this.blogsQueryRepository.findBlogById(blogId);
+    const isBlogExist = await this.blogsQueryRepo.findBlogById(blogId);
     const isPostExist = await this.postsQueryRepository.findPostById(postId);
     if (!isBlogExist || !isPostExist) {
       throw new NotFoundException();
@@ -170,7 +174,7 @@ export class SaBlogsController {
     if (!isUUID(blogId) || !isUUID(postId)) {
       throw new NotFoundException();
     }
-    const isBlogExist = await this.blogsQueryRepository.findBlogById(blogId);
+    const isBlogExist = await this.blogsQueryRepo.findBlogById(blogId);
     const isPostExist = await this.postsQueryRepository.findPostById(postId);
     if (!isBlogExist || !isPostExist) {
       throw new NotFoundException();

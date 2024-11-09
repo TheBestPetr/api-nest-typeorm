@@ -8,7 +8,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { BlogsQueryRepository } from '../infrastructure/sql/blogs.query.repository';
 import { BlogsService } from '../application/blogs.service';
 import { BlogInputQueryDto } from './dto/input/blog.input.dto';
 import {
@@ -20,12 +19,13 @@ import { PostsService } from '../../posts/application/posts.service';
 import { PostsQueryRepository } from '../../posts/infrastructure/sql/posts.query.repository';
 import { isUUID } from 'class-validator';
 import { BearerAuthWithout401 } from '../../../infrastructure/decorators/bearer.auth.without.401';
+import { BlogsQueryRepo } from '../infrastructure/typeorm/blogs.query.repo';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private readonly blogsService: BlogsService,
-    private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly blogsQueryRepo: BlogsQueryRepo,
     private readonly postsService: PostsService,
     private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
@@ -34,7 +34,7 @@ export class BlogsController {
   @HttpCode(200)
   async findBlogs(@Query() inputQuery: BlogInputQueryDto) {
     const query = sortNPagingBlogQuery(inputQuery);
-    const blogs = await this.blogsQueryRepository.findBlogs(query);
+    const blogs = await this.blogsQueryRepo.findBlogs(query);
     return blogs;
   }
 
@@ -44,7 +44,7 @@ export class BlogsController {
     if (!isUUID(blogId)) {
       throw new NotFoundException();
     }
-    const foundBlog = await this.blogsQueryRepository.findBlogById(blogId);
+    const foundBlog = await this.blogsQueryRepo.findBlogById(blogId);
     if (!foundBlog) {
       throw new NotFoundException();
     }
@@ -62,7 +62,7 @@ export class BlogsController {
     if (!isUUID(blogId)) {
       throw new NotFoundException();
     }
-    const isBlogExist = await this.blogsQueryRepository.findBlogById(blogId);
+    const isBlogExist = await this.blogsQueryRepo.findBlogById(blogId);
     if (!isBlogExist) {
       throw new NotFoundException();
     }
