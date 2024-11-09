@@ -14,7 +14,11 @@ export class DeleteAllController {
         public.device,
         public."refresh_token_black_list",
         public."user_email_confirmation",
-        public."user_password_recovery"
+        public."user_password_recovery",
+        public."blog",
+        public."post",
+        public."post_likes_count_info",
+        public."post_user_like_status"
          CASCADE
       `);
   }
