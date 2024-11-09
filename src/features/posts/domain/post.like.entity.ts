@@ -27,13 +27,13 @@ export class PostUserLikeStatus {
   @CreateDateColumn({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 
-  /*@ManyToOne(() => Post, (post) => post.likeStatuses)
+  @ManyToOne(() => Post, (post) => post.likeStatuses)
   @JoinColumn()
-  post: Post;*/
+  post: Post;
 
-  /*@ManyToOne(() => User, (user) => user.userPostsLikes)
+  @ManyToOne(() => User, (user) => user.userPostsLikes)
   @JoinColumn()
-  user: User;*/
+  user: User;
 }
 
 @Entity()

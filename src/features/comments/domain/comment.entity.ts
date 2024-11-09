@@ -1,13 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Post } from '../../posts/domain/post.entity';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Comment {
@@ -23,9 +14,9 @@ export class Comment {
   @Column({ type: 'timestamp with time zone' })
   createdAt: string;
 
-  @ManyToOne(() => Post, (post) => post.comments)
+  /*@ManyToOne(() => Post, (post) => post.comments)
   @JoinColumn()
-  post: Post;
+  post: Post;*/
 
   /*@OneToMany(() => CommentUserLikeStatus, (user) => user.comment)
   @JoinColumn()

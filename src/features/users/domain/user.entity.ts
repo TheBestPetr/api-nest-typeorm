@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Device } from '../../securityDevices/domain/device.entity';
+import { PostUserLikeStatus } from '../../posts/domain/post.like.entity';
 
 @Entity()
 export class User {
@@ -31,9 +32,9 @@ export class User {
   @JoinColumn()
   devices: Device[];
 
-  //@OneToMany(() => PostUserLikeStatus, (postLikes) => postLikes.user)
-  //@JoinColumn()
-  //userPostsLikes: PostUserLikeStatus;
+  @OneToMany(() => PostUserLikeStatus, (postLikes) => postLikes.user)
+  @JoinColumn()
+  userPostsLikes: PostUserLikeStatus;
 
   //@OneToMany(() => CommentUserLikeStatus, (commentLikes) => commentLikes.user)
   //@JoinColumn()

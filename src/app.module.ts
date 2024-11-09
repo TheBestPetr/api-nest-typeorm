@@ -17,8 +17,8 @@ import {
 import { JwtService } from './infrastructure/utils/services/jwt.service';
 import { BcryptService } from './infrastructure/utils/services/bcrypt.service';
 import { NodemailerService } from './infrastructure/utils/services/nodemailer.service';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { PostModule } from './features/posts/post.module';
+import { BlogModule } from './features/blogs/blog.module';
 
 @Module({
   imports: [
@@ -30,8 +30,8 @@ import { ThrottlerGuard } from '@nestjs/throttler';
     UserModule,
     AuthModule,
     DeviceModule,
-    //BlogModule,
-    //PostModule,
+    BlogModule,
+    PostModule,
     //CommentModule,
     HelloPageModule,
   ],

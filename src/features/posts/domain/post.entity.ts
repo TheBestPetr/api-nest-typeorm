@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Blog } from '../../blogs/domain/blog.entity';
-import { Comment } from '../../comments/domain/comment.entity';
+import { PostUserLikeStatus } from './post.like.entity';
 
 @Entity()
 export class Post {
@@ -37,11 +37,11 @@ export class Post {
   @JoinColumn()
   blog: Blog;
 
-  @OneToMany(() => Comment, (comment) => comment.post)
+  /*@OneToMany(() => Comment, (comment) => comment.post)
   @JoinColumn()
-  comments: Comment[];
+  comments: Comment[];*/
 
-  /*@OneToMany(() => PostUserLikeStatus, (user) => user.post)
+  @OneToMany(() => PostUserLikeStatus, (user) => user.post)
   @JoinColumn()
-  likeStatuses: PostUserLikeStatus[];*/
+  likeStatuses: PostUserLikeStatus[];
 }

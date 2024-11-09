@@ -12,10 +12,17 @@ import { JwtService } from '../../infrastructure/utils/services/jwt.service';
 import { PostsLikeInfoRepository } from './infrastructure/sql/posts.like.info.repository';
 import { CommentsQueryRepository } from '../comments/infrastructure/sql/comments.query.repository';
 import { CommentsLikeInfoRepository } from '../comments/infrastructure/sql/comments.like.info.repository';
-import { UsersQueryRepo } from '../users/infrastructure/typeorm/users.query.repo';
+import {
+  PostLikesCountInfo,
+  PostUserLikeStatus,
+} from './domain/post.like.entity';
+import { UserModule } from '../users/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post])],
+  imports: [
+    TypeOrmModule.forFeature([Post, PostUserLikeStatus, PostLikesCountInfo]),
+    UserModule,
+  ],
   controllers: [PostsController],
   providers: [
     PostsService,
@@ -23,7 +30,6 @@ import { UsersQueryRepo } from '../users/infrastructure/typeorm/users.query.repo
     PostsQueryRepository,
     BlogsQueryRepository,
     CommentsService,
-    UsersQueryRepo,
     CommentsRepository,
     CommentsQueryRepository,
     CommentsLikeInfoRepository,
