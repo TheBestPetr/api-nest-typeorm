@@ -39,12 +39,19 @@ export const SETTINGS = {
     LOGIN: process.env.BASIC_LOGIN,
     PASSWORD: process.env.BASIC_PASSWORD,
   },
-  JWT_SECRET: process.env.JWT_SECRET || '',
 
   REQ_COUNTER: ThrottlerModule.forRoot([
     {
-      ttl: 10000,
-      limit: 5,
+      ttl: parseInt(<string>process.env.REQ_COUNTER_TIME),
+      limit: parseInt(<string>process.env.REQ_COUNTER_LIMIT),
     },
   ]),
+
+  JWT: {
+    TIME: {
+      ACCESS: process.env.ACCESS_TOKEN_TIME,
+      REFRESH: process.env.REFRESH_TOKEN_TIME,
+    },
+    JWT_SECRET: process.env.JWT_SECRET || '',
+  },
 };
