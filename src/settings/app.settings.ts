@@ -11,7 +11,7 @@ export const SETTINGS = {
     CONNECT_TO_TEST_DB: TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
-      port: 5432,
+      port: parseInt(<string>process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
@@ -36,8 +36,8 @@ export const SETTINGS = {
     PASSWORD: process.env.EMAIL_ACCOUNT_PASSWORD,
   },
   BASIC: {
-    LOGIN: process.env.BASIC_LOGIN || '',
-    PASSWORD: process.env.BASIC_PASSWORD || '',
+    LOGIN: process.env.BASIC_LOGIN,
+    PASSWORD: process.env.BASIC_PASSWORD,
   },
   JWT_SECRET: process.env.JWT_SECRET || '',
 
