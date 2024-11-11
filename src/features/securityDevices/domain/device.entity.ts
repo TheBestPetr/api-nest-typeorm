@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from '../../users/domain/user.entity';
 
-@Entity()
+@Entity({ name: 'devices' })
 export class Device {
   @Column({ type: 'uuid' })
   userId: string;

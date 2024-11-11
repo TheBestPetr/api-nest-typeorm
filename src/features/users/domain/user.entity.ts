@@ -14,7 +14,7 @@ import { UserInputDto } from '../api/dto/input/user.input.dto';
 import { randomUUID } from 'node:crypto';
 import { add } from 'date-fns';
 
-@Entity()
+@Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -49,7 +49,7 @@ export class User {
   // userCommentLikes: CommentUserLikeStatus[];
 }
 
-@Entity()
+@Entity({ name: 'users_email_confirmation' })
 export class UserEmailConfirmation {
   @PrimaryColumn({ type: 'uuid' })
   userId: string;
@@ -80,7 +80,7 @@ export class UserEmailConfirmation {
   user: User;
 }
 
-@Entity()
+@Entity({ name: 'users_password_recovery' })
 export class UserPasswordRecovery {
   @PrimaryColumn({ type: 'uuid' })
   userId: string | null;

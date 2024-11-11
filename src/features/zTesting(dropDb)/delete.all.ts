@@ -10,15 +10,15 @@ export class DeleteAllController {
   async deleteAll() {
     await this.dataSource.query(`
       TRUNCATE 
-        public.user,
-        public.device,
+        public.users,
+        public.devices,
         public."refresh_token_black_list",
-        public."user_email_confirmation",
-        public."user_password_recovery",
-        public."blog",
-        public."post",
+        public."users_email_confirmation",
+        public."users_password_recovery",
+        public."blogs",
+        public."posts",
         public."post_likes_count_info",
-        public."post_user_like_status"
+        public."post_likes_status_info"
          CASCADE
       `);
   }

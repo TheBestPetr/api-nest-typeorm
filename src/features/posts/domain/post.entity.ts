@@ -10,7 +10,7 @@ import { Blog } from '../../blogs/domain/blog.entity';
 import { PostUserLikeStatus } from './post.like.entity';
 import { PostInputBlogDto } from '../api/dto/input/post.input.dto';
 
-@Entity()
+@Entity({ name: 'posts' })
 export class Post {
   @PrimaryGeneratedColumn('uuid')
   id: string;

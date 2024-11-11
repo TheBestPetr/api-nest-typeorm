@@ -9,7 +9,7 @@ import {
 import { Post } from './post.entity';
 import { User } from '../../users/domain/user.entity';
 
-@Entity()
+@Entity({ name: 'post_likes_status_info' })
 export class PostUserLikeStatus {
   @PrimaryColumn({ type: 'uuid' })
   postId: string;
@@ -33,7 +33,7 @@ export class PostUserLikeStatus {
   user: User;
 }
 
-@Entity()
+@Entity({ name: 'post_likes_count_info' })
 export class PostLikesCountInfo {
   @PrimaryColumn({ type: 'uuid' })
   postId: string;

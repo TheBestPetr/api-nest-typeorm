@@ -8,7 +8,7 @@ import {
 import { Post } from '../../posts/domain/post.entity';
 import { BlogInputDto } from '../api/dto/input/blog.input.dto';
 
-@Entity()
+@Entity({ name: 'blogs' })
 export class Blog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
