@@ -11,7 +11,7 @@ export const SETTINGS = {
     CONNECT_TO_TEST_DB: TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
-      port: parseInt(<string>process.env.POSTGRES_PORT),
+      port: Number(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
@@ -42,8 +42,8 @@ export const SETTINGS = {
 
   REQ_COUNTER: ThrottlerModule.forRoot([
     {
-      ttl: parseInt(<string>process.env.REQ_COUNTER_TIME),
-      limit: parseInt(<string>process.env.REQ_COUNTER_LIMIT),
+      ttl: Number(process.env.REQ_COUNTER_TIME),
+      limit: Number(process.env.REQ_COUNTER_LIMIT),
     },
   ]),
 
@@ -52,6 +52,6 @@ export const SETTINGS = {
       ACCESS: process.env.ACCESS_TOKEN_TIME,
       REFRESH: process.env.REFRESH_TOKEN_TIME,
     },
-    JWT_SECRET: process.env.JWT_SECRET || '',
+    JWT_SECRET: String(process.env.JWT_SECRET),
   },
 };
