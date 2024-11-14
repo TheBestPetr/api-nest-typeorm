@@ -3,17 +3,19 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
 import { Comment } from './comment.entity';
+import { User } from '../../users/domain/user.entity';
 
 @Entity()
 export class CommentUserLikeStatus {
   @PrimaryColumn({ type: 'uuid' })
   commentId: string;
 
-  @PrimaryColumn({ type: 'uuid' })
+  @Column({ type: 'uuid' })
   userId: string;
 
   @Column({ enum: ['None', 'Like', 'Dislike'] })
@@ -22,11 +24,11 @@ export class CommentUserLikeStatus {
   @CreateDateColumn({ type: 'timestamp with time zone', update: false })
   createdAt: string;
 
-  /*@ManyToOne(() => Comment, (comment) => comment.likeStatuses)
-  comment: Comment;*/
+  @ManyToOne(() => Comment, (comment) => comment.likeStatuses)
+  comment: Comment;
 
-  //@ManyToOne(() => User, (user) => user.userCommentLikes)
-  //user: User;
+  @ManyToOne(() => User, (user) => user.userCommentLikes)
+  user: User;
 }
 
 @Entity()

@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { CommentsRepository } from '../infrastructure/sql/comments.repository';
 import { CommentInputDto } from '../api/dto/input/comment.input.dto';
 import { CommentOutputDto } from '../api/dto/output/comment.output.dto';
 import { Comment, CommentatorInfo } from '../domain/comment.entity';
-import { CommentsQueryRepository } from '../infrastructure/sql/comments.query.repository';
 import { LikeStatus } from '../../../base/types/like.statuses';
-import { CommentsLikeInfoRepository } from '../infrastructure/sql/comments.like.info.repository';
 import { CommentUserLikeStatus } from '../domain/comment.like.entity';
 import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
+import { CommentsRepo } from '../infrastructure/typeorm/comments.repo';
+import { CommentsQueryRepo } from '../infrastructure/typeorm/comments.query.repo';
+import { CommentsLikeInfoRepo } from '../infrastructure/typeorm/comments.like.info.repo';
 
 @Injectable()
 export class CommentsService {
   constructor(
-    private readonly commentsRepository: CommentsRepository,
-    private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commentsRepo: CommentsRepo,
+    private readonly commentsQueryRepo: CommentsQueryRepo,
     private readonly usersQueryRepo: UsersQueryRepo,
-    private readonly commentLikeInfoRepository: CommentsLikeInfoRepository,
+    private readonly commentLikeInfoRepo: CommentsLikeInfoRepo,
   ) {}
 
   async createComment(
@@ -33,18 +33,18 @@ export class CommentsService {
     commentatorInfo.userId = user!.userId;
     commentatorInfo.userLogin = user!.login;
 
-    const insertedComment = await this.commentsRepository.createComment(
+    const insertedComment = await this.commentsRepo.createComment(
       newComment,
       commentatorInfo,
     );
     return {
-      id: insertedComment.id,
-      content: insertedComment.content,
+      id: insertedComment!.id,
+      content: insertedComment!.content,
       commentatorInfo: {
         userId: commentatorInfo.userId,
         userLogin: commentatorInfo.userLogin,
       },
-      createdAt: insertedComment.createdAt,
+      createdAt: insertedComment!.createdAt,
       likesInfo: {
         likesCount: 0,
         dislikesCount: 0,
@@ -57,16 +57,15 @@ export class CommentsService {
     input: CommentInputDto,
     commentId: string,
   ): Promise<boolean> {
-    return this.commentsRepository.updateComment(input, commentId);
+    return this.commentsRepo.updateComment(input, commentId);
   }
 
   async delete(commentId: string): Promise<boolean> {
-    return this.commentsRepository.deleteComment(commentId);
+    return this.commentsRepo.deleteComment(commentId);
   }
 
   async isUserCanDoThis(userId: string, commentId: string): Promise<boolean> {
-    const comment =
-      await this.commentsQueryRepository.findCommentById(commentId);
+    const comment = await this.commentsQueryRepo.findCommentById(commentId);
     return userId === comment?.commentatorInfo.userId;
   }
 
@@ -76,36 +75,34 @@ export class CommentsService {
     inputLikeStatus: LikeStatus,
   ): Promise<boolean> {
     const commentLikeInfo =
-      await this.commentLikeInfoRepository.findCommentsLikesInfo(
+      await this.commentLikeInfoRepo.findCommentUserLikesInfo(
         commentId,
         userId,
       );
-    if (!commentLikeInfo[0]?.status) {
+    if (!commentLikeInfo?.status) {
       const newCommentLikeInfo = new CommentUserLikeStatus();
       newCommentLikeInfo.commentId = commentId;
       newCommentLikeInfo.userId = userId;
       newCommentLikeInfo.status = inputLikeStatus;
       const createLikeInfo =
-        await this.commentLikeInfoRepository.createNewLikeInfo(
-          newCommentLikeInfo,
-        );
+        await this.commentLikeInfoRepo.createNewLikeInfo(newCommentLikeInfo);
       const updateLikesCount =
-        await this.commentLikeInfoRepository.updateAddCommentLikesCount(
+        await this.commentLikeInfoRepo.updateAddCommentLikesCount(
           commentId,
           inputLikeStatus,
         );
       return createLikeInfo && updateLikesCount;
     }
     const updateLikeInfo =
-      await this.commentLikeInfoRepository.updateCommentLikeInfo(
+      await this.commentLikeInfoRepo.updateCommentUserLikeStatus(
         commentId,
         userId,
         inputLikeStatus,
       );
     const updateLikesCount =
-      await this.commentLikeInfoRepository.updateExistCommentLikesCount(
+      await this.commentLikeInfoRepo.updateExistCommentLikesCount(
         commentId,
-        commentLikeInfo[0].status as LikeStatus,
+        commentLikeInfo.status as LikeStatus,
         inputLikeStatus,
       );
     return updateLikeInfo && updateLikesCount;

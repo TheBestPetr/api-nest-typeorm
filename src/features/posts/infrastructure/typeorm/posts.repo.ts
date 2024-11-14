@@ -37,7 +37,7 @@ export class PostsRepo {
     return !!post;
   }
 
-  async deletePost(blogId: string, postId: string): Promise<boolean> {
+  async deletePost(postId: string): Promise<boolean> {
     const isPostDeleted = await this.postsRepo.delete({ id: postId });
     return isPostDeleted.affected === 1;
   }

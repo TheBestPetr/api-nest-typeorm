@@ -70,7 +70,7 @@ export class BlogsController {
     const foundPosts = await this.postsQueryRepo.findPostsByBlogIdInParams(
       query,
       blogId,
-      //req.userId,
+      req.userId,
     );
     if (!foundPosts) {
       throw new NotFoundException();

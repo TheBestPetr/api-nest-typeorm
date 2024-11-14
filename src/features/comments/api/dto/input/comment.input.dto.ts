@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 import { LikeStatus } from '../../../../../base/types/like.statuses';
 import { Transform, TransformFnParams } from 'class-transformer';
+import { Comment } from '../../../domain/comment.entity';
 
 export class CommentInputDto {
   @IsString()
@@ -20,6 +21,6 @@ export class CommentInputLikeStatusDto {
 export class CommentInputQueryDto {
   pageNumber: number;
   pageSize: number;
-  sortBy: string;
+  sortBy: keyof Comment;
   sortDirection: 1 | -1 | 'asc' | 'desc' | 'ascending' | 'descending';
 }

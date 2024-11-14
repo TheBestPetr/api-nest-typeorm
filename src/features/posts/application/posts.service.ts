@@ -4,10 +4,10 @@ import { PostOutputDto } from '../api/dto/output/post.output.dto';
 import { Post } from '../domain/post.entity';
 import { LikeStatus } from '../../../base/types/like.statuses';
 import { PostUserLikeStatus } from '../domain/post.like.entity';
-import { PostsLikeInfoRepository } from '../infrastructure/sql/posts.like.info.repository';
 import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
 import { BlogsQueryRepo } from '../../blogs/infrastructure/typeorm/blogs.query.repo';
 import { PostsRepo } from '../infrastructure/typeorm/posts.repo';
+import { PostsLikeInfoRepo } from '../infrastructure/typeorm/posts.like.info.repo';
 
 @Injectable()
 export class PostsService {
@@ -15,7 +15,7 @@ export class PostsService {
     private readonly postsRepo: PostsRepo,
     private readonly blogsQueryRepo: BlogsQueryRepo,
     private readonly usersQueryRepo: UsersQueryRepo,
-    private readonly postsLikeInfoRepository: PostsLikeInfoRepository,
+    private readonly postsLikeInfoRepo: PostsLikeInfoRepo,
   ) {}
   async updatePost(
     blogId: string,
@@ -25,8 +25,8 @@ export class PostsService {
     return this.postsRepo.updatePost(blogId, postId, input);
   }
 
-  async deletePost(blogId: string, postId: string): Promise<boolean> {
-    return this.postsRepo.deletePost(blogId, postId);
+  async deletePost(postId: string): Promise<boolean> {
+    return this.postsRepo.deletePost(postId);
   }
 
   async createPost(
@@ -62,36 +62,36 @@ export class PostsService {
     userId: string,
     inputLikeStatus: LikeStatus,
   ): Promise<boolean> {
-    const postLikesInfo = await this.postsLikeInfoRepository.findPostsLikesInfo(
+    const postLikesInfo = await this.postsLikeInfoRepo.findPostUserLikesInfo(
       postId,
       userId,
     );
     const user = await this.usersQueryRepo.findUserById(userId);
-    if (!postLikesInfo[0]?.status) {
+    if (!postLikesInfo) {
       const newPostLikeInfo = new PostUserLikeStatus();
       newPostLikeInfo.postId = postId;
       newPostLikeInfo.userId = userId;
       newPostLikeInfo.userLogin = user!.login;
       newPostLikeInfo.status = inputLikeStatus;
       const insertedLikeInfo =
-        await this.postsLikeInfoRepository.createNewLikeInfo(newPostLikeInfo);
+        await this.postsLikeInfoRepo.createNewLikeInfo(newPostLikeInfo);
       const updateLikesCount =
-        await this.postsLikeInfoRepository.updateAddPostLikesCount(
+        await this.postsLikeInfoRepo.updateAddPostLikesCount(
           postId,
           inputLikeStatus,
         );
       return insertedLikeInfo && updateLikesCount;
     }
     const updateLikeInfo =
-      await this.postsLikeInfoRepository.updatePostLikeInfo(
+      await this.postsLikeInfoRepo.updatePostUserLikeStatus(
         postId,
         userId,
         inputLikeStatus,
       );
     const updateLikesCount =
-      await this.postsLikeInfoRepository.updateExistPostLikesCount(
+      await this.postsLikeInfoRepo.updateExistPostLikesCount(
         postId,
-        postLikesInfo[0].status,
+        postLikesInfo.status as LikeStatus,
         inputLikeStatus,
       );
     return updateLikeInfo && updateLikesCount;

@@ -1,6 +1,18 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Post } from '../../posts/domain/post.entity';
+import { User } from '../../users/domain/user.entity';
+import { CommentUserLikeStatus } from './comment.like.entity';
 
-@Entity()
+@Entity({ name: 'comments' })
 export class Comment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -11,17 +23,17 @@ export class Comment {
   @Column({ type: 'varchar', length: 300 })
   content: string;
 
-  @Column({ type: 'timestamp with time zone' })
+  @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: string;
 
-  /*@ManyToOne(() => Post, (post) => post.comments)
-  post: Post;*/
+  @ManyToOne(() => Post, (post) => post.comments)
+  post: Post;
 
-  /*@OneToMany(() => CommentUserLikeStatus, (user) => user.comment)
-  likeStatuses: CommentUserLikeStatus[];*/
+  @OneToMany(() => CommentUserLikeStatus, (user) => user.comment)
+  likeStatuses: CommentUserLikeStatus[];
 }
 
-@Entity()
+@Entity({ name: 'commentator_info' })
 export class CommentatorInfo {
   @PrimaryColumn({ type: 'uuid' })
   commentId: string;
@@ -32,9 +44,9 @@ export class CommentatorInfo {
   @Column({ type: 'varchar', length: 10 })
   userLogin: string;
 
-  /*@OneToOne(() => Comment, (comment) => comment.id)
-  comment: Comment;*/
+  @OneToOne(() => Comment, (comment) => comment.id)
+  comment: Comment;
 
-  /*@ManyToOne(() => User, (user) => user.id)
-  user: User;*/
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
 }

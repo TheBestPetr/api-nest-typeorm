@@ -15,7 +15,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from '../application/comments.service';
-import { CommentsQueryRepository } from '../infrastructure/sql/comments.query.repository';
 import { BearerAuthWithout401 } from '../../../infrastructure/decorators/bearer.auth.without.401';
 import { isUUID } from 'class-validator';
 import { BearerAuthGuard } from '../../../infrastructure/guards/bearer.auth.guard';
@@ -23,12 +22,13 @@ import {
   CommentInputDto,
   CommentInputLikeStatusDto,
 } from './dto/input/comment.input.dto';
+import { CommentsQueryRepo } from '../infrastructure/typeorm/comments.query.repo';
 
 @Controller('comments')
 export class CommentsController {
   constructor(
     private readonly commentsService: CommentsService,
-    private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commentsQueryRepo: CommentsQueryRepo,
   ) {}
 
   @UseGuards(BearerAuthWithout401)
@@ -38,7 +38,7 @@ export class CommentsController {
     if (!isUUID(commentId)) {
       throw new NotFoundException();
     }
-    const comment = await this.commentsQueryRepository.findCommentById(
+    const comment = await this.commentsQueryRepo.findCommentById(
       commentId,
       req.userId,
     );
@@ -60,7 +60,7 @@ export class CommentsController {
       throw new NotFoundException();
     }
     const isCommentExist =
-      await this.commentsQueryRepository.findCommentById(commentId);
+      await this.commentsQueryRepo.findCommentById(commentId);
     if (!isCommentExist) {
       throw new NotFoundException();
     }
@@ -83,18 +83,14 @@ export class CommentsController {
   @UseGuards(BearerAuthGuard)
   @Delete(':commentId')
   @HttpCode(204)
-  async deleteController(
-    @Request() req,
-    @Param('commentId') commentId: string,
-  ) {
+  async deleteComment(@Request() req, @Param('commentId') commentId: string) {
     if (!req.userId) {
       throw new UnauthorizedException();
     }
     if (!isUUID(commentId)) {
       throw new NotFoundException();
     }
-    const comment =
-      await this.commentsQueryRepository.findCommentById(commentId);
+    const comment = await this.commentsQueryRepo.findCommentById(commentId);
     if (!comment) {
       throw new NotFoundException();
     }
@@ -125,8 +121,7 @@ export class CommentsController {
     if (!isUUID(commentId)) {
       throw new NotFoundException();
     }
-    const comment =
-      await this.commentsQueryRepository.findCommentById(commentId);
+    const comment = await this.commentsQueryRepo.findCommentById(commentId);
     if (!comment) {
       throw new NotFoundException();
     }

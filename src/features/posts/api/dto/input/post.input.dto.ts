@@ -8,6 +8,7 @@ import {
 import { LikeStatus } from '../../../../../base/types/like.statuses';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { blogIdIsExist } from '../../../../../infrastructure/decorators/blogId.custom.decorator';
+import { Post } from '../../../domain/post.entity';
 
 export class PostInputDto {
   @IsString()
@@ -44,7 +45,7 @@ export class PostInputLikeStatusDto {
 export class PostInputQueryDto {
   pageNumber: number;
   pageSize: number;
-  sortBy: string;
+  sortBy: keyof Post;
   sortDirection: 1 | -1 | 'asc' | 'desc' | 'ascending' | 'descending';
 }
 

@@ -13,6 +13,7 @@ import { PostUserLikeStatus } from '../../posts/domain/post.like.entity';
 import { UserInputDto } from '../api/dto/input/user.input.dto';
 import { randomUUID } from 'node:crypto';
 import { add } from 'date-fns';
+import { CommentUserLikeStatus } from '../../comments/domain/comment.like.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -45,8 +46,8 @@ export class User {
   @OneToMany(() => PostUserLikeStatus, (postLikes) => postLikes.user)
   userPostsLikes: PostUserLikeStatus;
 
-  //@OneToMany(() => CommentUserLikeStatus, (commentLikes) => commentLikes.user)
-  // userCommentLikes: CommentUserLikeStatus[];
+  @OneToMany(() => CommentUserLikeStatus, (commentLikes) => commentLikes.user)
+  userCommentLikes: CommentUserLikeStatus[];
 }
 
 @Entity({ name: 'users_email_confirmation' })

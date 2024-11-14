@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
+import { User } from '../../../domain/user.entity';
 
 export class UserInputDto {
   @IsString()
@@ -21,7 +22,7 @@ export class UserInputDto {
 }
 
 export class UserInputQueryDto {
-  sortBy: string;
+  sortBy: keyof User;
   sortDirection: 1 | -1 | 'asc' | 'desc' | 'ascending' | 'descending';
   pageNumber: number;
   pageSize: number;

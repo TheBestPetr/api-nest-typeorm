@@ -9,6 +9,7 @@ import {
 import { Blog } from '../../blogs/domain/blog.entity';
 import { PostUserLikeStatus } from './post.like.entity';
 import { PostInputBlogDto } from '../api/dto/input/post.input.dto';
+import { Comment } from '../../comments/domain/comment.entity';
 
 @Entity({ name: 'posts' })
 export class Post {
@@ -46,8 +47,8 @@ export class Post {
   @ManyToOne(() => Blog, (blog) => blog.posts)
   blog: Blog;
 
-  /*@OneToMany(() => Comment, (comment) => comment.post)
-  comments: Comment[];*/
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 
   @OneToMany(() => PostUserLikeStatus, (user) => user.post)
   likeStatuses: PostUserLikeStatus[];

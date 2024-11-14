@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { SETTINGS } from '../../settings/app.settings';
+import { AUTH_SETTINGS } from '../../settings/app.settings';
 import { Buffer } from 'buffer';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class BasicAuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     const bytes = Buffer.from(secondTokenPart, 'base64').toString('utf-8');
-    const credentials = `${SETTINGS.BASIC.LOGIN}:${SETTINGS.BASIC.PASSWORD}`;
+    const credentials = `${AUTH_SETTINGS.BASIC.LOGIN}:${AUTH_SETTINGS.BASIC.PASSWORD}`;
 
     if (bytes !== credentials) {
       throw new UnauthorizedException();

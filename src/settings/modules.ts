@@ -35,7 +35,6 @@ import { DevicesRepo } from '../features/securityDevices/infrastructure/typeorm/
 import { UsersQueryRepo } from '../features/users/infrastructure/typeorm/users.query.repo';
 import { UsersRepo } from '../features/users/infrastructure/typeorm/users.repo';
 import { UsersService } from '../features/users/application/users.service';
-import { PostsLikeInfoRepository } from '../features/posts/infrastructure/sql/posts.like.info.repository';
 import {
   emailConfirmationCodeIsExist,
   emailIsExist,
@@ -43,15 +42,30 @@ import {
   loginIsExist,
   passwordRecoveryCodeIsExist,
 } from '../infrastructure/decorators/auth.custom.decorator';
+import { PostsLikeInfoRepo } from '../features/posts/infrastructure/typeorm/posts.like.info.repo';
+import {
+  Comment,
+  CommentatorInfo,
+} from '../features/comments/domain/comment.entity';
+import {
+  CommentLikesCountInfo,
+  CommentUserLikeStatus,
+} from '../features/comments/domain/comment.like.entity';
+import { CommentsService } from '../features/comments/application/comments.service';
+import { CommentsRepo } from '../features/comments/infrastructure/typeorm/comments.repo';
+import { CommentsQueryRepo } from '../features/comments/infrastructure/typeorm/comments.query.repo';
+import { CommentsController } from '../features/comments/api/comments.controller';
+import { CommentsLikeInfoRepo } from '../features/comments/infrastructure/typeorm/comments.like.info.repo';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       RefreshTokenBlackList,
       Blog,
-      //Comment,
-      //CommentatorInfo,
-      //CommentLikesCountInfo,
+      Comment,
+      CommentatorInfo,
+      CommentLikesCountInfo,
+      CommentUserLikeStatus,
       Post,
       PostUserLikeStatus,
       PostLikesCountInfo,
@@ -65,7 +79,7 @@ import {
     AuthController,
     BlogsController,
     SaBlogsController,
-    //CommentsController,
+    CommentsController,
     PostsController,
     DevicesController,
     UsersController,
@@ -84,15 +98,14 @@ import {
     BlogsService,
     BlogsRepo,
     BlogsQueryRepo,
-    //CommentsService,
-    //CommentsRepository,
-    //CommentsQueryRepository,
-    //CommentsLikeInfoRepository,
-    //UsersQueryRepo,
+    CommentsService,
+    CommentsRepo,
+    CommentsQueryRepo,
+    CommentsLikeInfoRepo,
     PostsService,
     PostsRepo,
     PostsQueryRepo,
-    PostsLikeInfoRepository,
+    PostsLikeInfoRepo,
     DevicesService,
     DevicesRepo,
     UsersService,

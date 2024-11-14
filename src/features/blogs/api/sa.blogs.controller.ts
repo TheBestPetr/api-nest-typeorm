@@ -11,6 +11,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { BlogInputDto, BlogInputQueryDto } from './dto/input/blog.input.dto';
 import {
@@ -116,7 +117,7 @@ export class SaBlogsController {
   @Get(':blogId/posts')
   @HttpCode(200)
   async findPostsByBlogIdInParams(
-    //@Request() req,
+    @Request() req,
     @Query() inputQuery: PostInputQueryDto,
     @Param('blogId') blogId: string,
   ) {
@@ -131,7 +132,7 @@ export class SaBlogsController {
     const foundPosts = await this.postsQueryRepo.findPostsByBlogIdInParams(
       query,
       blogId,
-      //req.userId,
+      req.userId,
     );
     if (!foundPosts) {
       throw new NotFoundException();
@@ -178,7 +179,7 @@ export class SaBlogsController {
     if (!isBlogExist || !isPostExist) {
       throw new NotFoundException();
     }
-    const isDelete = await this.postsService.deletePost(blogId, postId);
+    const isDelete = await this.postsService.deletePost(postId);
     if (!isDelete) {
       throw new NotFoundException();
     }

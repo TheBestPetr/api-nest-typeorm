@@ -7,21 +7,39 @@ import {
   Param,
   Query,
   UseGuards,
+  Body,
+  Put,
+  UnauthorizedException,
+  InternalServerErrorException,
+  Post,
 } from '@nestjs/common';
 import { PostsService } from '../application/posts.service';
-import { sortNPagingPostQuery } from '../../../infrastructure/utils/query.mappers';
-import { PostInputQueryDto } from './dto/input/post.input.dto';
+import {
+  sortNPagingCommentQuery,
+  sortNPagingPostQuery,
+} from '../../../infrastructure/utils/query.mappers';
+import {
+  PostInputLikeStatusDto,
+  PostInputQueryDto,
+} from './dto/input/post.input.dto';
 import { isUUID } from 'class-validator';
 import { BearerAuthWithout401 } from '../../../infrastructure/decorators/bearer.auth.without.401';
 import { PostsQueryRepo } from '../infrastructure/typeorm/posts.query.repo';
+import { BearerAuthGuard } from '../../../infrastructure/guards/bearer.auth.guard';
+import {
+  CommentInputDto,
+  CommentInputQueryDto,
+} from '../../comments/api/dto/input/comment.input.dto';
+import { CommentsService } from '../../comments/application/comments.service';
+import { CommentsQueryRepo } from '../../comments/infrastructure/typeorm/comments.query.repo';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,
     private readonly postsQueryRepo: PostsQueryRepo,
-    //private readonly commentsService: CommentsService,
-    //private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly commentsService: CommentsService,
+    private readonly commentsQueryRepo: CommentsQueryRepo,
   ) {}
 
   @UseGuards(BearerAuthWithout401)
@@ -29,10 +47,7 @@ export class PostsController {
   @HttpCode(200)
   async findPosts(@Request() req, @Query() inputQuery: PostInputQueryDto) {
     const query = sortNPagingPostQuery(inputQuery);
-    const posts = await this.postsQueryRepo.findPosts(
-      query,
-      //req.userId
-    );
+    const posts = await this.postsQueryRepo.findPosts(query, req.userId);
     return posts;
   }
 
@@ -45,7 +60,7 @@ export class PostsController {
     }
     const foundPost = await this.postsQueryRepo.findPostById(
       postId,
-      //req.userId,
+      req.userId,
     );
     if (!foundPost) {
       throw new NotFoundException();
@@ -53,7 +68,7 @@ export class PostsController {
     return foundPost;
   }
 
-  /*@UseGuards(BearerAuthGuard)
+  @UseGuards(BearerAuthGuard)
   @Put(':postId/like-status')
   @HttpCode(204)
   async updatePostLikeStatus(
@@ -77,11 +92,11 @@ export class PostsController {
       inputLikeType.likeStatus,
     );
     if (!isUpdate) {
-      throw new NotAcceptableException();
+      throw new InternalServerErrorException();
     }
-  }*/
+  }
 
-  /*@UseGuards(BearerAuthGuard)
+  @UseGuards(BearerAuthGuard)
   @Post(':postId/comments')
   @HttpCode(201)
   async createComment(
@@ -106,9 +121,9 @@ export class PostsController {
       postId,
     );
     return comment;
-  }*/
+  }
 
-  /*@UseGuards(BearerAuthWithout401)
+  @UseGuards(BearerAuthWithout401)
   @Get(':postId/comments')
   @HttpCode(200)
   async findCommentsByPostIdInParams(
@@ -124,11 +139,11 @@ export class PostsController {
       throw new NotFoundException();
     }
     const query = sortNPagingCommentQuery(inputQuery);
-    const comments = await this.commentsQueryRepository.findCommentsForPost(
+    const comments = await this.commentsQueryRepo.findCommentsForPost(
       postId,
       query,
       req.userId,
     );
     return comments;
-  }*/
+  }
 }

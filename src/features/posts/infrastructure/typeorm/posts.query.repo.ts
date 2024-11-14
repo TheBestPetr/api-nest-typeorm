@@ -1,23 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from '../../domain/post.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { PostInputQueryDto } from '../../api/dto/input/post.input.dto';
 import {
   PostOutputDto,
   PostOutputQueryDto,
 } from '../../api/dto/output/post.output.dto';
+import {
+  PostLikesCountInfo,
+  PostUserLikeStatus,
+} from '../../domain/post.like.entity';
+import { LikeStatus } from '../../../../base/types/like.statuses';
 
 @Injectable()
 export class PostsQueryRepo {
   constructor(
     @InjectRepository(Post) private readonly postsQueryRepo: Repository<Post>,
+    @InjectRepository(PostUserLikeStatus)
+    private readonly postUserLikeStatusRepo: Repository<PostUserLikeStatus>,
+    @InjectRepository(PostLikesCountInfo)
+    private readonly postLikesCountRepo: Repository<PostLikesCountInfo>,
   ) {}
 
   async findPostsByBlogIdInParams(
     query: PostInputQueryDto,
     blogId: string,
-    //userId?: string,
+    userId?: string,
   ): Promise<PostOutputQueryDto> {
     const [items, count] = await this.postsQueryRepo.findAndCount({
       where: { blogId: blogId },
@@ -25,6 +34,33 @@ export class PostsQueryRepo {
       take: query.pageSize,
       skip: (query.pageNumber - 1) * query.pageSize,
     });
+    const postIdsArr = items.map((post) => post.id);
+    const likesCountInfo = await this.postLikesCountRepo.find({
+      where: { postId: In(postIdsArr) },
+    });
+    const likesCountInfoMap = likesCountInfo.reduce((acc, info) => {
+      acc[info.postId] = {
+        likesCount: info.likesCount,
+        dislikesCount: info.dislikesCount,
+      };
+      return acc;
+    }, {});
+
+    const likeStatuses = userId
+      ? await this.postUserLikeStatusRepo.find({
+          where: { postId: In(postIdsArr), userId: userId },
+        })
+      : [];
+    const userLikesStatusMap = likeStatuses.reduce((acc, like) => {
+      acc[like.postId] = like.status;
+      return acc;
+    }, {});
+    const newestLikes = await this.postUserLikeStatusRepo.find({
+      where: { postId: In(postIdsArr) },
+      order: { createdAt: 'desc' },
+      take: 3,
+    });
+    console.log(newestLikes);
 
     return {
       pagesCount: Math.ceil(count / query.pageSize),
@@ -40,9 +76,9 @@ export class PostsQueryRepo {
         blogName: post.blogName,
         createdAt: post.createdAt,
         extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: 'None',
+          likesCount: likesCountInfoMap[post.id].likesCount,
+          dislikesCount: likesCountInfoMap[post.id].dislikesCount,
+          myStatus: userLikesStatusMap[post.id] || 'None',
           newestLikes: [],
         },
       })),
@@ -51,13 +87,33 @@ export class PostsQueryRepo {
 
   async findPosts(
     query: PostInputQueryDto,
-    //userId?: string,
+    userId?: string,
   ): Promise<PostOutputQueryDto> {
     const [items, count] = await this.postsQueryRepo.findAndCount({
       order: { [query.sortBy]: query.sortDirection },
       take: query.pageSize,
       skip: (query.pageNumber - 1) * query.pageSize,
     });
+    const postIdsArr = items.map((post) => post.id);
+    const likesCountInfo = await this.postLikesCountRepo.find({
+      where: { postId: In(postIdsArr) },
+    });
+    const likesCountInfoMap = likesCountInfo.reduce((acc, info) => {
+      acc[info.postId] = {
+        likesCount: info.likesCount,
+        dislikesCount: info.dislikesCount,
+      };
+      return acc;
+    }, {});
+    const likeStatuses = userId
+      ? await this.postUserLikeStatusRepo.find({
+          where: { postId: In(postIdsArr), userId: userId },
+        })
+      : [];
+    const userLikesStatusMap = likeStatuses.reduce((acc, like) => {
+      acc[like.postId] = like.status;
+      return acc;
+    }, {});
 
     return {
       pagesCount: Math.ceil(count / query.pageSize),
@@ -73,9 +129,9 @@ export class PostsQueryRepo {
         blogName: post.blogName,
         createdAt: post.createdAt,
         extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: 'None',
+          likesCount: likesCountInfoMap[post.id].likesCount,
+          dislikesCount: likesCountInfoMap[post.id].dislikesCount,
+          myStatus: userLikesStatusMap[post.id] || 'None',
           newestLikes: [],
         },
       })),
@@ -84,9 +140,18 @@ export class PostsQueryRepo {
 
   async findPostById(
     postId: string,
-    //userId?: string,
+    userId?: string,
   ): Promise<PostOutputDto | null> {
     const post = await this.postsQueryRepo.findOneBy({ id: postId });
+    const status = userId
+      ? await this.postUserLikeStatusRepo.findOneBy([
+          { postId: postId },
+          { userId: userId },
+        ])
+      : 'None';
+    const likesInfo = await this.postLikesCountRepo.findOneBy({
+      postId: postId,
+    });
 
     return post
       ? {
@@ -98,9 +163,9 @@ export class PostsQueryRepo {
           blogName: post.blogName,
           createdAt: post.createdAt,
           extendedLikesInfo: {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: 'None',
+            likesCount: likesInfo!.likesCount,
+            dislikesCount: likesInfo!.dislikesCount,
+            myStatus: status as LikeStatus,
             newestLikes: [],
           },
         }

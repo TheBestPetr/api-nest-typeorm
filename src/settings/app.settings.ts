@@ -7,6 +7,37 @@ config();
 
 export const SETTINGS = {
   PORT: process.env.APP_PORT || '',
+
+  NODEMAILER: {
+    USER: process.env.EMAIL_ACCOUNT_USER,
+    PASSWORD: process.env.EMAIL_ACCOUNT_PASSWORD,
+  },
+
+  REQ_COUNTER: ThrottlerModule.forRoot([
+    {
+      ttl: Number(process.env.REQ_COUNTER_TIME),
+      limit: Number(process.env.REQ_COUNTER_LIMIT),
+    },
+  ]),
+};
+
+export const AUTH_SETTINGS = {
+  JWT: {
+    TIME: {
+      ACCESS: process.env.ACCESS_TOKEN_TIME,
+      REFRESH: process.env.REFRESH_TOKEN_TIME,
+    },
+    JWT_SECRET: String(process.env.JWT_SECRET),
+  },
+
+  BASIC: {
+    LOGIN: process.env.BASIC_LOGIN,
+    PASSWORD: process.env.BASIC_PASSWORD,
+  },
+};
+
+export const DB_SETTINGS = {
+  USED_DB: process.env.USED_DB,
   DB_CONNECTION: {
     CONNECT_TO_TEST_DB: TypeOrmModule.forRoot({
       type: 'postgres',
@@ -29,29 +60,5 @@ export const SETTINGS = {
         },
       },
     }),
-  },
-
-  NODEMAILER: {
-    USER: process.env.EMAIL_ACCOUNT_USER,
-    PASSWORD: process.env.EMAIL_ACCOUNT_PASSWORD,
-  },
-  BASIC: {
-    LOGIN: process.env.BASIC_LOGIN,
-    PASSWORD: process.env.BASIC_PASSWORD,
-  },
-
-  REQ_COUNTER: ThrottlerModule.forRoot([
-    {
-      ttl: Number(process.env.REQ_COUNTER_TIME),
-      limit: Number(process.env.REQ_COUNTER_LIMIT),
-    },
-  ]),
-
-  JWT: {
-    TIME: {
-      ACCESS: process.env.ACCESS_TOKEN_TIME,
-      REFRESH: process.env.REFRESH_TOKEN_TIME,
-    },
-    JWT_SECRET: String(process.env.JWT_SECRET),
   },
 };
