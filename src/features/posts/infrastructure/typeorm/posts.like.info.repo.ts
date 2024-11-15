@@ -27,16 +27,13 @@ export class PostsLikeInfoRepo {
     return postUserLikeStatus ?? null;
   }
 
-  async createNewLikeInfo(postLikeInfo: PostUserLikeStatus): Promise<boolean> {
-    const newLikeStatus =
-      await this.postUserLikeStatusRepo.insert(postLikeInfo);
-    return !!newLikeStatus;
-  }
-
-  async updateAddPostLikesCount(
+  async createNewLikeInfoAndCount(
+    postLikeInfo: PostUserLikeStatus,
     postId: string,
     likeStatus: LikeStatus,
   ): Promise<boolean> {
+    const newLikeStatus =
+      await this.postUserLikeStatusRepo.insert(postLikeInfo);
     const postLikesCountInfo = await this.postLikesCountRepo.findOneBy({
       postId: postId,
     });
@@ -54,7 +51,7 @@ export class PostsLikeInfoRepo {
         await this.postLikesCountRepo.save(postLikesCountInfo);
         return true;
     }
-    return true;
+    return !!newLikeStatus || !!postLikesCountInfo;
   }
 
   async updatePostUserLikeStatus(
@@ -62,10 +59,10 @@ export class PostsLikeInfoRepo {
     userId: string,
     newStatus: LikeStatus,
   ): Promise<boolean> {
-    const postUserLikeStatus = await this.postUserLikeStatusRepo.findOneBy([
-      { postId: postId },
-      { userId: userId },
-    ]);
+    const postUserLikeStatus = await this.postUserLikeStatusRepo.findOneBy({
+      postId: postId,
+      userId: userId,
+    });
     if (!postUserLikeStatus) {
       return false;
     }
@@ -104,6 +101,16 @@ export class PostsLikeInfoRepo {
     }
     if (oldStatus === 'Dislike' && newStatus === 'None') {
       postLikesCountInfo.dislikesCount--;
+      await this.postLikesCountRepo.save(postLikesCountInfo);
+      return true;
+    }
+    if (oldStatus === 'None' && newStatus === 'Like') {
+      postLikesCountInfo.likesCount++;
+      await this.postLikesCountRepo.save(postLikesCountInfo);
+      return true;
+    }
+    if (oldStatus === 'None' && newStatus === 'Dislike') {
+      postLikesCountInfo.dislikesCount++;
       await this.postLikesCountRepo.save(postLikesCountInfo);
       return true;
     }

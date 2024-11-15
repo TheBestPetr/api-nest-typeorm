@@ -32,6 +32,7 @@ import {
 } from '../../comments/api/dto/input/comment.input.dto';
 import { CommentsService } from '../../comments/application/comments.service';
 import { CommentsQueryRepo } from '../../comments/infrastructure/typeorm/comments.query.repo';
+import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
 
 @Controller('posts')
 export class PostsController {
@@ -40,6 +41,7 @@ export class PostsController {
     private readonly postsQueryRepo: PostsQueryRepo,
     private readonly commentsService: CommentsService,
     private readonly commentsQueryRepo: CommentsQueryRepo,
+    private readonly usersQueryRepo: UsersQueryRepo,
   ) {}
 
   @UseGuards(BearerAuthWithout401)
@@ -76,7 +78,8 @@ export class PostsController {
     @Param('postId') postId: string,
     @Body() inputLikeType: PostInputLikeStatusDto,
   ) {
-    if (!req.userId) {
+    const user = await this.usersQueryRepo.findUserById(req.userId);
+    if (!user) {
       throw new UnauthorizedException();
     }
     if (!isUUID(postId)) {

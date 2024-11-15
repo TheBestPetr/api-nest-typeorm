@@ -74,13 +74,12 @@ export class PostsService {
       newPostLikeInfo.userLogin = user!.login;
       newPostLikeInfo.status = inputLikeStatus;
       const insertedLikeInfo =
-        await this.postsLikeInfoRepo.createNewLikeInfo(newPostLikeInfo);
-      const updateLikesCount =
-        await this.postsLikeInfoRepo.updateAddPostLikesCount(
+        await this.postsLikeInfoRepo.createNewLikeInfoAndCount(
+          newPostLikeInfo,
           postId,
           inputLikeStatus,
         );
-      return insertedLikeInfo && updateLikesCount;
+      return insertedLikeInfo;
     }
     const updateLikeInfo =
       await this.postsLikeInfoRepo.updatePostUserLikeStatus(

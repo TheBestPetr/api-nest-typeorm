@@ -101,12 +101,14 @@ export class CommentsQueryRepo {
     const commentLikesInfo = await this.commentLikesCountRepo.findOneBy({
       commentId: comment.id,
     });
-    const status = userId
-      ? await this.commentUserLikeStatusRepo.findOneBy([
-          { commentId: comment.id },
-          { userId: userId },
-        ])
-      : 'None';
+    let status = 'None';
+    if (userId) {
+      const likeStatus = await this.commentUserLikeStatusRepo.findOneBy([
+        { commentId: commentId },
+        { userId: userId },
+      ]);
+      status = likeStatus?.status ?? 'None';
+    }
 
     return {
       id: comment.id,

@@ -14,7 +14,7 @@ export class PostUserLikeStatus {
   @PrimaryColumn({ type: 'uuid' })
   postId: string;
 
-  @Column({ type: 'uuid' })
+  @PrimaryColumn({ type: 'uuid' })
   userId: string;
 
   @Column({ type: 'varchar' })

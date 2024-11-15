@@ -56,11 +56,19 @@ export class PostsQueryRepo {
       return acc;
     }, {});
     const newestLikes = await this.postUserLikeStatusRepo.find({
-      where: { postId: In(postIdsArr) },
-      order: { createdAt: 'desc' },
-      take: 3,
+      where: { postId: In(postIdsArr), status: 'Like' },
     });
-    console.log(newestLikes);
+    const groupedLikes = postIdsArr.reduce((acc, postId) => {
+      acc[postId] = newestLikes
+        .filter((likeInfo) => likeInfo.postId === postId)
+        .slice(0, 3)
+        .map((like) => ({
+          addedAt: like.createdAt,
+          userId: like.userId,
+          login: like.userLogin,
+        }));
+      return acc;
+    }, {});
 
     return {
       pagesCount: Math.ceil(count / query.pageSize),
@@ -79,7 +87,7 @@ export class PostsQueryRepo {
           likesCount: likesCountInfoMap[post.id].likesCount,
           dislikesCount: likesCountInfoMap[post.id].dislikesCount,
           myStatus: userLikesStatusMap[post.id] || 'None',
-          newestLikes: [],
+          newestLikes: groupedLikes[post.id] || [],
         },
       })),
     };
@@ -114,6 +122,20 @@ export class PostsQueryRepo {
       acc[like.postId] = like.status;
       return acc;
     }, {});
+    const newestLikes = await this.postUserLikeStatusRepo.find({
+      where: { postId: In(postIdsArr), status: 'Like' },
+    });
+    const groupedLikes = postIdsArr.reduce((acc, postId) => {
+      acc[postId] = newestLikes
+        .filter((likeInfo) => likeInfo.postId === postId)
+        .slice(0, 3)
+        .map((like) => ({
+          addedAt: like.createdAt,
+          userId: like.userId,
+          login: like.userLogin,
+        }));
+      return acc;
+    }, {});
 
     return {
       pagesCount: Math.ceil(count / query.pageSize),
@@ -132,7 +154,7 @@ export class PostsQueryRepo {
           likesCount: likesCountInfoMap[post.id].likesCount,
           dislikesCount: likesCountInfoMap[post.id].dislikesCount,
           myStatus: userLikesStatusMap[post.id] || 'None',
-          newestLikes: [],
+          newestLikes: groupedLikes[post.id] || [],
         },
       })),
     };
@@ -143,15 +165,27 @@ export class PostsQueryRepo {
     userId?: string,
   ): Promise<PostOutputDto | null> {
     const post = await this.postsQueryRepo.findOneBy({ id: postId });
-    const status = userId
-      ? await this.postUserLikeStatusRepo.findOneBy([
-          { postId: postId },
-          { userId: userId },
-        ])
-      : 'None';
+    let status = 'None';
+    if (userId) {
+      const likeStatus = await this.postUserLikeStatusRepo.findOneBy([
+        { postId: postId },
+        { userId: userId },
+      ]);
+      status = likeStatus?.status ?? 'None';
+    }
     const likesInfo = await this.postLikesCountRepo.findOneBy({
       postId: postId,
     });
+    const newestLikes = await this.postUserLikeStatusRepo.find({
+      where: { postId: post?.id, status: 'Like' },
+      order: { createdAt: 'desc' },
+      take: 3,
+    });
+    const newestLikesMap = newestLikes.map((like) => ({
+      addedAt: like.createdAt,
+      userId: like.userId,
+      login: like.userLogin,
+    }));
 
     return post
       ? {
@@ -166,7 +200,7 @@ export class PostsQueryRepo {
             likesCount: likesInfo!.likesCount,
             dislikesCount: likesInfo!.dislikesCount,
             myStatus: status as LikeStatus,
-            newestLikes: [],
+            newestLikes: newestLikesMap || [],
           },
         }
       : null;
