@@ -20,6 +20,7 @@ export class UsersQueryRepo {
         email: ILike(`%${searchWithEmail}%`),
         login: ILike(`%${searchWithLogin}%`),
       },
+      select: ['id', 'login', 'email', 'createdAt'],
       order: { [query.sortBy]: query.sortDirection },
       take: query.pageSize,
       skip: (query.pageNumber - 1) * query.pageSize,
@@ -30,12 +31,7 @@ export class UsersQueryRepo {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: count,
-      items: items.map((user) => ({
-        id: user.id,
-        login: user.login,
-        email: user.email,
-        createdAt: user.createdAt,
-      })),
+      items: items,
     };
   }
 

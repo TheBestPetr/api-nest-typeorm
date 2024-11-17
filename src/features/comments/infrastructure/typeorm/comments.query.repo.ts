@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { Comment, CommentatorInfo } from '../../domain/comment.entity';
+import { Repository } from 'typeorm';
+import { Comment } from '../../domain/comment.entity';
 import {
   CommentLikesCountInfo,
   CommentUserLikeStatus,
@@ -12,6 +12,7 @@ import {
 } from '../../api/dto/output/comment.output.dto';
 import { LikeStatus } from '../../../../base/types/like.statuses';
 import { CommentInputQueryDto } from '../../api/dto/input/comment.input.dto';
+import { CommentatorInfo } from '../../domain/commentator.entity';
 
 @Injectable()
 export class CommentsQueryRepo {
@@ -33,40 +34,11 @@ export class CommentsQueryRepo {
   ): Promise<CommentOutputQueryDto> {
     const [items, count] = await this.commentsRepo.findAndCount({
       where: { postId: postId },
+      relations: { commentator: true, likesCountInfo: true },
       order: { [query.sortBy]: query.sortDirection },
       take: query.pageSize,
       skip: (query.pageNumber - 1) * query.pageSize,
     });
-    const commentIdsArr = items.map((comment) => comment.id);
-    const commentatorInfo = await this.commentatorInfoRepo.find({
-      where: { commentId: In(commentIdsArr) },
-    });
-    const commentatorInfoMap = commentatorInfo.reduce((acc, info) => {
-      acc[info.commentId] = {
-        userId: info.userId,
-        userLogin: info.userLogin,
-      };
-      return acc;
-    }, {});
-    const likesCountInfo = await this.commentLikesCountRepo.find({
-      where: { commentId: In(commentIdsArr) },
-    });
-    const likesCountMap = likesCountInfo.reduce((acc, info) => {
-      acc[info.commentId] = {
-        likesCount: info.likesCount,
-        dislikesCount: info.dislikesCount,
-      };
-      return acc;
-    }, {});
-    const likeStatuses = userId
-      ? await this.commentUserLikeStatusRepo.find({
-          where: { commentId: In(commentIdsArr), userId: userId },
-        })
-      : [];
-    const userLikesStatusMap = likeStatuses.reduce((acc, like) => {
-      acc[like.commentId] = like.status;
-      return acc;
-    }, {});
 
     return {
       pagesCount: Math.ceil(count / query.pageSize),
@@ -76,12 +48,15 @@ export class CommentsQueryRepo {
       items: items.map((comment) => ({
         id: comment.id,
         content: comment.content,
-        commentatorInfo: commentatorInfoMap[comment.id],
+        commentatorInfo: {
+          userId: comment.commentator.userId,
+          userLogin: comment.commentator.userLogin,
+        },
         createdAt: comment.createdAt,
         likesInfo: {
-          likesCount: likesCountMap[comment.id].likesCount,
-          dislikesCount: likesCountMap[comment.id].dislikesCount,
-          myStatus: userLikesStatusMap[comment.id] || 'None',
+          likesCount: comment.likesCountInfo.likesCount,
+          dislikesCount: comment.likesCountInfo.dislikesCount,
+          myStatus: 'None',
         },
       })),
     };
@@ -91,38 +66,35 @@ export class CommentsQueryRepo {
     commentId: string,
     userId?: string,
   ): Promise<CommentOutputDto | null> {
-    const comment = await this.commentsRepo.findOneBy({ id: commentId });
-    if (!comment) {
-      return null;
-    }
-    const commentatorInfo = await this.commentatorInfoRepo.findOneBy({
-      commentId: comment.id,
+    const comment = await this.commentsRepo.findOne({
+      where: { id: commentId },
+      relations: { commentator: true, likesCountInfo: true },
     });
-    const commentLikesInfo = await this.commentLikesCountRepo.findOneBy({
-      commentId: comment.id,
-    });
+
     let status = 'None';
     if (userId) {
-      const likeStatus = await this.commentUserLikeStatusRepo.findOneBy([
-        { commentId: commentId },
-        { userId: userId },
-      ]);
+      const likeStatus = await this.commentUserLikeStatusRepo.findOneBy({
+        commentId: commentId,
+        userId: userId,
+      });
       status = likeStatus?.status ?? 'None';
     }
 
-    return {
-      id: comment.id,
-      content: comment.content,
-      commentatorInfo: {
-        userId: commentatorInfo!.userId,
-        userLogin: commentatorInfo!.userLogin,
-      },
-      createdAt: comment.createdAt,
-      likesInfo: {
-        likesCount: commentLikesInfo!.likesCount,
-        dislikesCount: commentLikesInfo!.dislikesCount,
-        myStatus: status as LikeStatus,
-      },
-    };
+    return comment
+      ? {
+          id: comment.id,
+          content: comment.content,
+          commentatorInfo: {
+            userId: comment.commentator.userId,
+            userLogin: comment.commentator.userLogin,
+          },
+          createdAt: comment.createdAt,
+          likesInfo: {
+            likesCount: comment.likesCountInfo.likesCount,
+            dislikesCount: comment.likesCountInfo.dislikesCount,
+            myStatus: status as LikeStatus,
+          },
+        }
+      : null;
   }
 }

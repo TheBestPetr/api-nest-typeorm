@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CommentInputDto } from '../api/dto/input/comment.input.dto';
 import { CommentOutputDto } from '../api/dto/output/comment.output.dto';
-import { Comment, CommentatorInfo } from '../domain/comment.entity';
+import { Comment } from '../domain/comment.entity';
 import { LikeStatus } from '../../../base/types/like.statuses';
 import { CommentUserLikeStatus } from '../domain/comment.like.entity';
 import { UsersQueryRepo } from '../../users/infrastructure/typeorm/users.query.repo';
 import { CommentsRepo } from '../infrastructure/typeorm/comments.repo';
 import { CommentsQueryRepo } from '../infrastructure/typeorm/comments.query.repo';
 import { CommentsLikeInfoRepo } from '../infrastructure/typeorm/comments.like.info.repo';
+import { CommentatorInfo } from '../domain/commentator.entity';
 
 @Injectable()
 export class CommentsService {

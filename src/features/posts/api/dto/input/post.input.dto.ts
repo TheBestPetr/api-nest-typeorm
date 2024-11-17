@@ -46,7 +46,8 @@ export class PostInputQueryDto {
   pageNumber: number;
   pageSize: number;
   sortBy: keyof Post;
-  sortDirection: 1 | -1 | 'asc' | 'desc' | 'ascending' | 'descending';
+  sortDirection: /* 1 | -1 | 'asc' | 'desc' | 'ascending' | 'descending'*/
+  'ASC' | 'DESC';
 }
 
 export class PostInputBlogDto {

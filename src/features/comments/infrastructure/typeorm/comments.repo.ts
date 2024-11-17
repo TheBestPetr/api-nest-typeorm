@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Comment, CommentatorInfo } from '../../domain/comment.entity';
+import { Comment } from '../../domain/comment.entity';
 import { Repository } from 'typeorm';
 import {
   CommentLikesCountInfo,
   CommentUserLikeStatus,
 } from '../../domain/comment.like.entity';
 import { CommentInputDto } from '../../api/dto/input/comment.input.dto';
+import { CommentatorInfo } from '../../domain/commentator.entity';
 
 @Injectable()
 export class CommentsRepo {

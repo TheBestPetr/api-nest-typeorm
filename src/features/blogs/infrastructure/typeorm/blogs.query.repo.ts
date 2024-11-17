@@ -18,6 +18,14 @@ export class BlogsQueryRepo {
     const search = query.searchNameTerm ?? '';
     const [items, count] = await this.blogsQueryRepo.findAndCount({
       where: { name: ILike(`%${search}%`) },
+      select: [
+        'id',
+        'name',
+        'description',
+        'websiteUrl',
+        'createdAt',
+        'isMembership',
+      ],
       order: { [query.sortBy]: query.sortDirection },
       take: query.pageSize,
       skip: (query.pageNumber - 1) * query.pageSize,
@@ -28,14 +36,7 @@ export class BlogsQueryRepo {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: count,
-      items: items.map((blog) => ({
-        id: blog.id,
-        name: blog.name,
-        description: blog.description,
-        websiteUrl: blog.websiteUrl,
-        createdAt: blog.createdAt,
-        isMembership: blog.isMembership,
-      })),
+      items: items,
     };
   }
 

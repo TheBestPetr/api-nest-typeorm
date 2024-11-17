@@ -43,10 +43,7 @@ import {
   passwordRecoveryCodeIsExist,
 } from '../infrastructure/decorators/auth.custom.decorator';
 import { PostsLikeInfoRepo } from '../features/posts/infrastructure/typeorm/posts.like.info.repo';
-import {
-  Comment,
-  CommentatorInfo,
-} from '../features/comments/domain/comment.entity';
+import { Comment } from '../features/comments/domain/comment.entity';
 import {
   CommentLikesCountInfo,
   CommentUserLikeStatus,
@@ -56,6 +53,7 @@ import { CommentsRepo } from '../features/comments/infrastructure/typeorm/commen
 import { CommentsQueryRepo } from '../features/comments/infrastructure/typeorm/comments.query.repo';
 import { CommentsController } from '../features/comments/api/comments.controller';
 import { CommentsLikeInfoRepo } from '../features/comments/infrastructure/typeorm/comments.like.info.repo';
+import { CommentatorInfo } from '../features/comments/domain/commentator.entity';
 
 @Module({
   imports: [

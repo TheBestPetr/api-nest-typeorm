@@ -42,7 +42,7 @@ export class CommentLikesCountInfo {
   @Column({ type: 'integer', default: 0 })
   dislikesCount: number;
 
-  @OneToOne(() => Comment, (comment) => comment.id)
+  @OneToOne(() => Comment, (comment) => comment.likesCountInfo)
   @JoinColumn()
   comment: Comment;
 }

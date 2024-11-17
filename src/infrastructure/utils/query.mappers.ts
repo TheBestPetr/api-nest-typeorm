@@ -16,7 +16,7 @@ export const sortNPagingBlogQuery = (query: BlogInputQueryDto) => {
 export const sortNPagingPostQuery = (query: PostInputQueryDto) => {
   return {
     sortBy: query.sortBy ?? 'createdAt',
-    sortDirection: query.sortDirection ?? 'desc',
+    sortDirection: query.sortDirection ?? 'DESC',
     pageNumber: query.pageNumber ? +query.pageNumber : 1,
     pageSize: query.pageSize ? +query.pageSize : 10,
   };

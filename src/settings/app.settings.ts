@@ -48,6 +48,7 @@ export const DB_SETTINGS = {
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
       synchronize: true,
+      //logging: true,
     }),
     CONNECT_TO_NEON_DB: TypeOrmModule.forRoot({
       type: 'postgres',

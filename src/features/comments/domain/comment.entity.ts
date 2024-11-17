@@ -5,12 +5,14 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Post } from '../../posts/domain/post.entity';
-import { User } from '../../users/domain/user.entity';
-import { CommentUserLikeStatus } from './comment.like.entity';
+import {
+  CommentLikesCountInfo,
+  CommentUserLikeStatus,
+} from './comment.like.entity';
+import { CommentatorInfo } from './commentator.entity';
 
 @Entity({ name: 'comments' })
 export class Comment {
@@ -29,24 +31,15 @@ export class Comment {
   @ManyToOne(() => Post, (post) => post.comments)
   post: Post;
 
+  @OneToOne(() => CommentatorInfo, (commentator) => commentator.comment)
+  commentator: CommentatorInfo;
+
   @OneToMany(() => CommentUserLikeStatus, (user) => user.comment)
   likeStatuses: CommentUserLikeStatus[];
-}
 
-@Entity({ name: 'commentator_info' })
-export class CommentatorInfo {
-  @PrimaryColumn({ type: 'uuid' })
-  commentId: string;
-
-  @PrimaryColumn({ type: 'uuid' })
-  userId: string;
-
-  @Column({ type: 'varchar', length: 10 })
-  userLogin: string;
-
-  @OneToOne(() => Comment, (comment) => comment.id)
-  comment: Comment;
-
-  @ManyToOne(() => User, (user) => user.id)
-  user: User;
+  @OneToOne(
+    () => CommentLikesCountInfo,
+    (commentLikesCount) => commentLikesCount.comment,
+  )
+  likesCountInfo: CommentLikesCountInfo;
 }

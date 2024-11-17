@@ -107,6 +107,16 @@ export class CommentsLikeInfoRepo {
       await this.commentLikesCountRepo.save(commentLikesCountInfo);
       return true;
     }
+    if (oldStatus === 'None' && newStatus === 'Like') {
+      commentLikesCountInfo.likesCount++;
+      await this.commentLikesCountRepo.save(commentLikesCountInfo);
+      return true;
+    }
+    if (oldStatus === 'None' && newStatus === 'Dislike') {
+      commentLikesCountInfo.dislikesCount++;
+      await this.commentLikesCountRepo.save(commentLikesCountInfo);
+      return true;
+    }
     return oldStatus === newStatus;
   }
 }

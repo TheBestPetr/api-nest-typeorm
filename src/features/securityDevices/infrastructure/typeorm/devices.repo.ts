@@ -25,10 +25,10 @@ export class DevicesRepo {
     newIat: string,
     newExp: string,
   ): Promise<boolean> {
-    const device = await this.devicesRepo.findOneBy([
-      { deviceId: deviceId },
-      { iat: oldIat },
-    ]);
+    const device = await this.devicesRepo.findOneBy({
+      deviceId: deviceId,
+      iat: oldIat,
+    });
     if (device) {
       device.iat = newIat;
       device.exp = newExp;

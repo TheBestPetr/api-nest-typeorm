@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryColumn,
@@ -44,6 +45,7 @@ export class PostLikesCountInfo {
   @Column({ type: 'integer', default: 0 })
   dislikesCount: number;
 
-  @OneToOne(() => Post, (post) => post.id)
+  @OneToOne(() => Post, (post) => post.likesCountInfo)
+  @JoinColumn()
   post: Post;
 }

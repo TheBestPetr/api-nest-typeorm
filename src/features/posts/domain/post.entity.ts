@@ -4,10 +4,11 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Blog } from '../../blogs/domain/blog.entity';
-import { PostUserLikeStatus } from './post.like.entity';
+import { PostLikesCountInfo, PostUserLikeStatus } from './post.like.entity';
 import { PostInputBlogDto } from '../api/dto/input/post.input.dto';
 import { Comment } from '../../comments/domain/comment.entity';
 
@@ -50,6 +51,12 @@ export class Post {
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
 
-  @OneToMany(() => PostUserLikeStatus, (user) => user.post)
+  @OneToMany(
+    () => PostUserLikeStatus,
+    (postLikesStatus) => postLikesStatus.post,
+  )
   likeStatuses: PostUserLikeStatus[];
+
+  @OneToOne(() => PostLikesCountInfo, (postLikesCount) => postLikesCount.post)
+  likesCountInfo: PostLikesCountInfo;
 }

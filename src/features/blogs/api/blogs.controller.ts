@@ -72,9 +72,9 @@ export class BlogsController {
       blogId,
       req.userId,
     );
-    if (!foundPosts) {
+    /*if (!foundPosts) {
       throw new NotFoundException();
-    }
+    }*/
     return foundPosts;
   }
 }
