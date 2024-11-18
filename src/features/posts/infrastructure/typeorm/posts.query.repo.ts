@@ -28,39 +28,21 @@ export class PostsQueryRepo {
     blogId: string,
     userId?: string,
   ) /*: Promise<PostOutputQueryDto>*/ {
-    /*const [items, count] = await this.postsQueryRepo
-      .createQueryBuilder('p')
-      .leftJoinAndSelect('p.likesCountInfo', 'c')
-      .leftJoinAndSelect('p.likeStatuses', 's')
-      .where('p.blogId = :blogId', { blogId })
-      .andWhere('s.status = :status', { status: 'Like' })
-      /!*.andWhere(
-        `(SELECT COUNT(*) 
-        FROM post_likes_status_info sub
-        WHERE sub.postId = s.postId
-        AND sub.status = 'Like' 
-        AND sub.createdAt >= s.createdAt
-      ) <= 3`,
-      )*!/
-      .getManyAndCount();*/
-
     const [items, count] = await this.postsQueryRepo.findAndCount({
       where: { blogId: blogId },
-      relations: { likesCountInfo: true, likeStatuses: true },
+      relations: { likesCountInfo: true },
       order: { [query.sortBy]: query.sortDirection },
       take: query.pageSize,
       skip: (query.pageNumber - 1) * query.pageSize,
     });
 
-    const postIdsArr = items.map((post) => post.id);
+    const postIds = items.map((post) => post.id);
 
     const newestLikes = await this.postUserLikeStatusRepo.find({
-      where: { postId: In(postIdsArr), status: 'Like' },
+      where: { postId: In(postIds), status: 'Like' }, // todo likes
     });
 
     console.log(newestLikes);
-
-    console.log(items);
 
     return {
       pagesCount: Math.ceil(count / query.pageSize),
@@ -79,12 +61,7 @@ export class PostsQueryRepo {
           likesCount: post.likesCountInfo.likesCount,
           dislikesCount: post.likesCountInfo.dislikesCount,
           myStatus: 'None',
-          newestLikes:
-            newestLikes.map((like) => ({
-              addedAt: like.createdAt,
-              userId: like.userId,
-              userLogin: like.userLogin,
-            })) || [],
+          newestLikes: [],
         },
       })),
     };

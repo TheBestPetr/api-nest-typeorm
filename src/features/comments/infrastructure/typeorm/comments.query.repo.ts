@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Comment } from '../../domain/comment.entity';
 import {
   CommentLikesCountInfo,
@@ -40,6 +40,18 @@ export class CommentsQueryRepo {
       skip: (query.pageNumber - 1) * query.pageSize,
     });
 
+    const commentIds = items.map((comment) => comment.id);
+
+    const status = await this.commentUserLikeStatusRepo.findBy({
+      userId: userId,
+      commentId: In(commentIds),
+    });
+
+    const statusMap = status.reduce((acc, status) => {
+      acc[status.commentId] = status.status;
+      return acc;
+    }, {});
+
     return {
       pagesCount: Math.ceil(count / query.pageSize),
       page: query.pageNumber,
@@ -56,7 +68,7 @@ export class CommentsQueryRepo {
         likesInfo: {
           likesCount: comment.likesCountInfo.likesCount,
           dislikesCount: comment.likesCountInfo.dislikesCount,
-          myStatus: 'None',
+          myStatus: statusMap[comment.id] || 'None',
         },
       })),
     };
