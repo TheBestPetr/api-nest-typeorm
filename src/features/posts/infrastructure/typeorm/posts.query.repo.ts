@@ -38,76 +38,39 @@ export class PostsQueryRepo {
 
     const postIds = items.map((post) => post.id);
 
-    const newestLikes = await this.postUserLikeStatusRepo.find({
-      where: { postId: In(postIds), status: 'Like' }, // todo likes
+    const likeStatuses = await this.postUserLikeStatusRepo.findBy({
+      postId: In(postIds),
+      userId: userId,
     });
+    const userLikesStatusMap = likeStatuses.reduce((acc, likeInfo) => {
+      acc[likeInfo.postId] = likeInfo.status;
+      return acc;
+    }, {});
 
-    console.log(newestLikes);
-
-    return {
-      pagesCount: Math.ceil(count / query.pageSize),
-      page: query.pageNumber,
-      pageSize: query.pageSize,
-      totalCount: count,
-      items: items.map((post) => ({
-        id: post.id,
-        title: post.title,
-        shortDescription: post.shortDescription,
-        content: post.content,
-        blogId: post.blogId,
-        blogName: post.blogName,
-        createdAt: post.createdAt,
-        extendedLikesInfo: {
-          likesCount: post.likesCountInfo.likesCount,
-          dislikesCount: post.likesCountInfo.dislikesCount,
-          myStatus: 'None',
-          newestLikes: [],
+    const newestLikes = await this.postUserLikeStatusRepo
+      .createQueryBuilder('s')
+      .select('s.*')
+      .addSelect('s_with_rn.rn')
+      .leftJoin(
+        (subQuery) => {
+          return subQuery
+            .select('s.*')
+            .addSelect(
+              'ROW_NUMBER() OVER(PARTITION BY s."postId" ORDER BY s."createdAt" DESC)',
+              'rn',
+            )
+            .from('post_likes_status_info', 's')
+            .where('s."postId" IN (:...postIds)', { postIds })
+            .andWhere('s.status = :status', { status: 'Like' });
         },
-      })),
-    };
-  }
-
-  async findPosts(
-    query: PostInputQueryDto,
-    userId?: string,
-  ): Promise<PostOutputQueryDto> {
-    const [items, count] = await this.postsQueryRepo.findAndCount({
-      order: { [query.sortBy]: query.sortDirection },
-      take: query.pageSize,
-      skip: (query.pageNumber - 1) * query.pageSize,
-    });
-    const postIdsArr = items.map((post) => post.id);
-    const likesCountInfo = await this.postLikesCountRepo.find({
-      where: { postId: In(postIdsArr) },
-    });
-    const likesCountInfoMap = likesCountInfo.reduce((acc, info) => {
-      acc[info.postId] = {
-        likesCount: info.likesCount,
-        dislikesCount: info.dislikesCount,
-      };
-      return acc;
-    }, {});
-    const likeStatuses = userId
-      ? await this.postUserLikeStatusRepo.find({
-          where: { postId: In(postIdsArr), userId: userId },
-        })
-      : [];
-    const userLikesStatusMap = likeStatuses.reduce((acc, like) => {
-      acc[like.postId] = like.status;
-      return acc;
-    }, {});
-    const newestLikes = await this.postUserLikeStatusRepo.find({
-      where: { postId: In(postIdsArr), status: 'Like' },
-    });
-    const groupedLikes = postIdsArr.reduce((acc, postId) => {
+        's_with_rn',
+        's."postId" = s_with_rn."postId" AND s."userId" = s_with_rn."userId"',
+      )
+      .where('s_with_rn.rn <= 3')
+      .getRawMany();
+    const groupedLikes = postIds.reduce((acc, postId) => {
       acc[postId] = newestLikes
-        .filter((likeInfo) => likeInfo.postId === postId)
-        .sort((firstLike, secondLike) =>
-          new Date(firstLike.createdAt) < new Date(secondLike.createdAt)
-            ? 1
-            : -1,
-        )
-        .slice(0, 3)
+        .filter((like) => like.postId === postId)
         .map((like) => ({
           addedAt: like.createdAt,
           userId: like.userId,
@@ -130,8 +93,84 @@ export class PostsQueryRepo {
         blogName: post.blogName,
         createdAt: post.createdAt,
         extendedLikesInfo: {
-          likesCount: likesCountInfoMap[post.id].likesCount,
-          dislikesCount: likesCountInfoMap[post.id].dislikesCount,
+          likesCount: post.likesCountInfo.likesCount,
+          dislikesCount: post.likesCountInfo.dislikesCount,
+          myStatus: userLikesStatusMap[post.id] || 'None',
+          newestLikes: groupedLikes[post.id] || [],
+        },
+      })),
+    };
+  }
+
+  async findPosts(
+    query: PostInputQueryDto,
+    userId?: string,
+  ): Promise<PostOutputQueryDto> {
+    const [items, count] = await this.postsQueryRepo.findAndCount({
+      relations: { likesCountInfo: true },
+      order: { [query.sortBy]: query.sortDirection },
+      take: query.pageSize,
+      skip: (query.pageNumber - 1) * query.pageSize,
+    });
+    const postIds = items.map((post) => post.id);
+
+    const likeStatuses = await this.postUserLikeStatusRepo.findBy({
+      postId: In(postIds),
+      userId: userId,
+    });
+    const userLikesStatusMap = likeStatuses.reduce((acc, likeInfo) => {
+      acc[likeInfo.postId] = likeInfo.status;
+      return acc;
+    }, {});
+
+    const newestLikes = await this.postUserLikeStatusRepo
+      .createQueryBuilder('s')
+      .select('s.*')
+      .addSelect('s_with_rn.rn')
+      .leftJoin(
+        (subQuery) => {
+          return subQuery
+            .select('s.*')
+            .addSelect(
+              'ROW_NUMBER() OVER(PARTITION BY s."postId" ORDER BY s."createdAt" DESC)',
+              'rn',
+            )
+            .from('post_likes_status_info', 's')
+            .where('s."postId" IN (:...postIds)', { postIds })
+            .andWhere('s.status = :status', { status: 'Like' });
+        },
+        's_with_rn',
+        's."postId" = s_with_rn."postId" AND s."userId" = s_with_rn."userId"',
+      )
+      .where('s_with_rn.rn <= 3')
+      .getRawMany();
+    const groupedLikes = postIds.reduce((acc, postId) => {
+      acc[postId] = newestLikes
+        .filter((like) => like.postId === postId)
+        .map((like) => ({
+          addedAt: like.createdAt,
+          userId: like.userId,
+          login: like.userLogin,
+        }));
+      return acc;
+    }, {});
+
+    return {
+      pagesCount: Math.ceil(count / query.pageSize),
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: count,
+      items: items.map((post) => ({
+        id: post.id,
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        blogId: post.blogId,
+        blogName: post.blogName,
+        createdAt: post.createdAt,
+        extendedLikesInfo: {
+          likesCount: post.likesCountInfo.likesCount,
+          dislikesCount: post.likesCountInfo.dislikesCount,
           myStatus: userLikesStatusMap[post.id] || 'None',
           newestLikes: groupedLikes[post.id] || [],
         },
