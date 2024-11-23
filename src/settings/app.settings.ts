@@ -46,15 +46,15 @@ export const DB_SETTINGS = {
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      autoLoadEntities: true,
-      synchronize: true,
-      //logging: true,
+      autoLoadEntities: false,
+      synchronize: false,
+      logging: false,
     }),
     CONNECT_TO_NEON_DB: TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.NEON_POSTGRES_URL,
-      autoLoadEntities: true,
-      synchronize: true,
+      autoLoadEntities: false,
+      synchronize: false,
       extra: {
         ssl: {
           rejectUnauthorized: false,

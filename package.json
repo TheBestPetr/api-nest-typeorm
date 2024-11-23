@@ -17,14 +17,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "add-migration": "node ./src/database/tools/add-migration.js",
+    "apply-migration": "typeorm-ts-node-commonjs migration:run -d ./src/database/data-source.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/cqrs": "^10.2.7",
-    "@nestjs/mongoose": "^10.0.10",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.4.0",
     "@nestjs/throttler": "^6.2.1",
@@ -40,7 +41,6 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.6.0",
     "nodemailer": "^6.9.14",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.0",
