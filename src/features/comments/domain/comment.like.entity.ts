@@ -15,7 +15,7 @@ export class CommentUserLikeStatus {
   @PrimaryColumn({ type: 'uuid' })
   commentId: string;
 
-  @Column({ type: 'uuid' })
+  @PrimaryColumn({ type: 'uuid' })
   userId: string;
 
   @Column({ enum: ['None', 'Like', 'Dislike'] })

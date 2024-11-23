@@ -2,27 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Comment } from '../../domain/comment.entity';
-import {
-  CommentLikesCountInfo,
-  CommentUserLikeStatus,
-} from '../../domain/comment.like.entity';
+import { CommentUserLikeStatus } from '../../domain/comment.like.entity';
 import {
   CommentOutputDto,
   CommentOutputQueryDto,
 } from '../../api/dto/output/comment.output.dto';
 import { LikeStatus } from '../../../../base/types/like.statuses';
 import { CommentInputQueryDto } from '../../api/dto/input/comment.input.dto';
-import { CommentatorInfo } from '../../domain/commentator.entity';
 
 @Injectable()
 export class CommentsQueryRepo {
   constructor(
     @InjectRepository(Comment)
     private readonly commentsRepo: Repository<Comment>,
-    @InjectRepository(CommentatorInfo)
-    private readonly commentatorInfoRepo: Repository<CommentatorInfo>,
-    @InjectRepository(CommentLikesCountInfo)
-    private readonly commentLikesCountRepo: Repository<CommentLikesCountInfo>,
     @InjectRepository(CommentUserLikeStatus)
     private readonly commentUserLikeStatusRepo: Repository<CommentUserLikeStatus>,
   ) {}

@@ -20,24 +20,20 @@ export class CommentsLikeInfoRepo {
     commentId: string,
     userId: string,
   ): Promise<CommentUserLikeStatus | null> {
-    const likeInfo = await this.commentUserLikeStatus.findOneBy([
-      { commentId: commentId },
-      { userId: userId },
-    ]);
+    const likeInfo = await this.commentUserLikeStatus.findOneBy({
+      commentId: commentId,
+      userId: userId,
+    });
     return likeInfo ?? null;
   }
 
-  async createNewLikeInfo(
+  async createNewLikeInfoAndCount(
     commentLikeInfo: CommentUserLikeStatus,
-  ): Promise<boolean> {
-    const newLikeInfo = await this.commentUserLikeStatus.save(commentLikeInfo);
-    return !!newLikeInfo;
-  }
-
-  async updateAddCommentLikesCount(
     commentId: string,
     likeStatus: LikeStatus,
   ): Promise<boolean> {
+    const newLikeStatus =
+      await this.commentUserLikeStatus.insert(commentLikeInfo);
     const commentLikesCountInfo = await this.commentLikesCountRepo.findOneBy({
       commentId: commentId,
     });
@@ -54,7 +50,7 @@ export class CommentsLikeInfoRepo {
         await this.commentLikesCountRepo.save(commentLikesCountInfo);
         return true;
     }
-    return true;
+    return !!newLikeStatus || !!commentLikesCountInfo;
   }
 
   async updateCommentUserLikeStatus(
@@ -62,10 +58,10 @@ export class CommentsLikeInfoRepo {
     userId: string,
     newStatus: LikeStatus,
   ): Promise<boolean> {
-    const commentUserLikeStatus = await this.commentUserLikeStatus.findOneBy([
-      { commentId: commentId },
-      { userId: userId },
-    ]);
+    const commentUserLikeStatus = await this.commentUserLikeStatus.findOneBy({
+      commentId: commentId,
+      userId: userId,
+    });
     if (!commentUserLikeStatus) {
       return false;
     }

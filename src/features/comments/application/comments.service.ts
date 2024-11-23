@@ -80,19 +80,18 @@ export class CommentsService {
         commentId,
         userId,
       );
-    if (!commentLikeInfo?.status) {
+    if (!commentLikeInfo) {
       const newCommentLikeInfo = new CommentUserLikeStatus();
       newCommentLikeInfo.commentId = commentId;
       newCommentLikeInfo.userId = userId;
       newCommentLikeInfo.status = inputLikeStatus;
-      const createLikeInfo =
-        await this.commentLikeInfoRepo.createNewLikeInfo(newCommentLikeInfo);
-      const updateLikesCount =
-        await this.commentLikeInfoRepo.updateAddCommentLikesCount(
+      const insertedLikeInfo =
+        await this.commentLikeInfoRepo.createNewLikeInfoAndCount(
+          newCommentLikeInfo,
           commentId,
           inputLikeStatus,
         );
-      return createLikeInfo && updateLikesCount;
+      return insertedLikeInfo;
     }
     const updateLikeInfo =
       await this.commentLikeInfoRepo.updateCommentUserLikeStatus(

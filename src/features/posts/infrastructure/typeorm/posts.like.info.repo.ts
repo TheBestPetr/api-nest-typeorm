@@ -20,11 +20,11 @@ export class PostsLikeInfoRepo {
     postId: string,
     userId: string,
   ): Promise<PostUserLikeStatus | null> {
-    const postUserLikeStatus = await this.postUserLikeStatusRepo.findOneBy({
+    const likeInfo = await this.postUserLikeStatusRepo.findOneBy({
       userId: userId,
       postId: postId,
     });
-    return postUserLikeStatus ?? null;
+    return likeInfo ?? null;
   }
 
   async createNewLikeInfoAndCount(

@@ -38,7 +38,12 @@ export class PostsRepo {
   }
 
   async deletePost(postId: string): Promise<boolean> {
+    const isPostLikesCountIndoDeleted = await this.postsLikesCountRepo.delete({
+      postId: postId,
+    });
     const isPostDeleted = await this.postsRepo.delete({ id: postId });
-    return isPostDeleted.affected === 1;
+    return (
+      isPostDeleted.affected === 1 || isPostLikesCountIndoDeleted.affected === 1
+    );
   }
 }

@@ -7,10 +7,7 @@ import {
   PostOutputDto,
   PostOutputQueryDto,
 } from '../../api/dto/output/post.output.dto';
-import {
-  PostLikesCountInfo,
-  PostUserLikeStatus,
-} from '../../domain/post.like.entity';
+import { PostUserLikeStatus } from '../../domain/post.like.entity';
 import { LikeStatus } from '../../../../base/types/like.statuses';
 
 @Injectable()
@@ -19,8 +16,6 @@ export class PostsQueryRepo {
     @InjectRepository(Post) private readonly postsQueryRepo: Repository<Post>,
     @InjectRepository(PostUserLikeStatus)
     private readonly postUserLikeStatusRepo: Repository<PostUserLikeStatus>,
-    @InjectRepository(PostLikesCountInfo)
-    private readonly postLikesCountRepo: Repository<PostLikesCountInfo>,
   ) {}
 
   async findPostsByBlogIdInParams(
