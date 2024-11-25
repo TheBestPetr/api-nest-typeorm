@@ -10,6 +10,7 @@ import { BearerAuthWithout401 } from '../../infrastructure/decorators/bearer.aut
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { JwtService } from '../../infrastructure/utils/services/jwt.service';
+import { User } from '../../features/users/domain/user.entity';
 
 @Controller('/')
 export class helloPageController {
@@ -21,14 +22,11 @@ export class helloPageController {
   async sayHello(@Request() req) {
     let user = 'dear user';
     if (req.userId) {
-      const isUserExist = await this.dataSource.query(
-        `
-      SELECT "login"
-        FROM public.user
-        WHERE "id" = $1`,
-        [req.userId],
-      );
-      user = isUserExist[0].login;
+      const userLogin = await this.dataSource
+        .createQueryBuilder(User, 'u')
+        .where('u.id = :userId', { userId: req.userId })
+        .getOne();
+      user = userLogin?.login ?? 'dear user';
     }
     return `Welcome to new project with typeorm, ${user}`;
   }

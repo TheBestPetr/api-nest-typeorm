@@ -11,7 +11,7 @@ import { NodemailerService } from '../../../infrastructure/utils/services/nodema
 import { randomUUID } from 'node:crypto';
 import { JwtService } from '../../../infrastructure/utils/services/jwt.service';
 import { AuthInputLoginDto } from '../api/dto/input/auth.input.dto';
-import { TokensType } from '../../../base/types/tokens.type';
+import { TokensType } from '../api/dto/output/tokens.type';
 import { DevicesService } from '../../securityDevices/application/devices.service';
 import { Device } from '../../securityDevices/domain/device.entity';
 import { UsersRepo } from '../../users/infrastructure/typeorm/users.repo';
