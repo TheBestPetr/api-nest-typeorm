@@ -72,9 +72,6 @@ export class BlogsController {
       blogId,
       req.userId,
     );
-    /*if (!foundPosts) {
-      throw new NotFoundException();
-    }*/
     return foundPosts;
   }
 }

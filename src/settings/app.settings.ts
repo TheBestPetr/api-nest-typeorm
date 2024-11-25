@@ -46,7 +46,7 @@ export const DB_SETTINGS = {
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      autoLoadEntities: false,
+      autoLoadEntities: true,
       synchronize: false,
       logging: false,
     }),

@@ -22,7 +22,7 @@ export class PostsQueryRepo {
     query: PostInputQueryDto,
     blogId: string,
     userId?: string,
-  ) /*: Promise<PostOutputQueryDto>*/ {
+  ): Promise<PostOutputQueryDto> {
     const [items, count] = await this.postsQueryRepo.findAndCount({
       where: { blogId: blogId },
       relations: { likesCountInfo: true },
@@ -63,14 +63,15 @@ export class PostsQueryRepo {
       )
       .where('s_with_rn.rn <= 3')
       .getRawMany();
-    const groupedLikes = postIds.reduce((acc, postId) => {
-      acc[postId] = newestLikes
-        .filter((like) => like.postId === postId)
-        .map((like) => ({
-          addedAt: like.createdAt,
-          userId: like.userId,
-          login: like.userLogin,
-        }));
+    const groupedLikes = newestLikes.reduce((acc, like) => {
+      if (!acc[like.postId]) {
+        acc[like.postId] = [];
+      }
+      acc[like.postId].push({
+        addedAt: like.createdAt,
+        userId: like.userId,
+        login: like.userLogin,
+      });
       return acc;
     }, {});
 
@@ -139,14 +140,15 @@ export class PostsQueryRepo {
       )
       .where('s_with_rn.rn <= 3')
       .getRawMany();
-    const groupedLikes = postIds.reduce((acc, postId) => {
-      acc[postId] = newestLikes
-        .filter((like) => like.postId === postId)
-        .map((like) => ({
-          addedAt: like.createdAt,
-          userId: like.userId,
-          login: like.userLogin,
-        }));
+    const groupedLikes = newestLikes.reduce((acc, like) => {
+      if (!acc[like.postId]) {
+        acc[like.postId] = [];
+      }
+      acc[like.postId].push({
+        addedAt: like.createdAt,
+        userId: like.userId,
+        login: like.userLogin,
+      });
       return acc;
     }, {});
 
