@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    container_name: postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+    networks:
+      - api-nest-docker-compose
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-nest
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+    ports:
+      - '9876:9876'
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+    networks:
+      - api-nest-docker-compose
+
+networks:
+  api-nest-docker-compose:
+    driver: bridge

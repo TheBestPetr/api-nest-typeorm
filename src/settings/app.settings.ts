@@ -45,7 +45,7 @@ export const DB_SETTINGS = {
       port: Number(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DATABASE,
+      database: process.env.POSTGRES_DATABASE ?? 'postgres',
       autoLoadEntities: true,
       synchronize: false,
       logging: false,
